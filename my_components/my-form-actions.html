@@ -1,0 +1,471 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="my-form-actions">
+	<template>
+		<style is="custom-style" include="iron-flex iron-flex-alignment">
+			:host {
+				display: block;
+			    width: 1000px;
+			    height: 100%;
+			    padding: 0!important;
+			    margin: 0!important;
+			    background-color:#C5CAE9
+
+			}
+			#formactions{
+				padding: 10px;
+			}
+
+		paper-button.custom {
+		    --paper-button-ink-color: var(--paper-pink-a200);
+		    --paper-button-flat-keyboard-focus: {
+		      background-color: var(--paper-pink-a200);
+		      color: white !important;
+		    };
+		    --paper-button-raised-keyboard-focus: {
+		      background-color: var(--paper-pink-a200) !important;
+		      color: white !important;
+		    };
+		  }
+		  paper-button.custom:hover {
+		    background-color: var(--paper-indigo-100);
+		  }
+		  paper-button.indigo {
+		    background-color: var(--paper-indigo-500);
+		    color: white;
+		    --paper-button-raised-keyboard-focus: {
+		      background-color: var(--paper-pink-a200) !important;
+		      color: white !important;
+		    };
+		  }
+		#agenda{
+
+
+		}
+		#agenda div{
+			border-top: 1px solid #fff;
+			float: left;
+			font-size: 12px;
+			box-sizing: border-box;
+			padding: 2px;			
+		}
+		#agenda .f1{
+			width: 24%;
+		}
+		#agenda .f2{
+			width: 65%;
+		}				
+		#agenda .f3{
+			width: 11%;
+			text-align: right;
+		}	
+		#subtareas div{
+			border-top: 1px solid #fff;
+			float: left;
+			font-size: 12px;
+			box-sizing: border-box;
+			padding: 2px;			
+		}
+		#subtareas .f1{
+			width: 80%;
+		}
+		#subtareas .f2{
+			text-align: right;
+			width: 10%;
+		}				
+		#subtareas .f3{
+			width: 5%;
+		}	
+		#subtareas span{
+			float: right;
+			color:#999;
+			font-size: .7em;
+		}
+		#subtareas .deltarea{
+			text-align: right;
+			color:#000;
+			font-size: 1.3em;
+			cursor: pointer;
+			margin-top: -5px;
+		}		
+		#subtareas paper-checkbox{
+			display: inline;
+			width: 80%
+		}
+		#subtareas>.subheader{
+			width: 100%;
+			display: inline-block;	
+			background: #3f51b5;
+			color:#fff;
+		}
+		  paper-icon-button.blue {
+		    --paper-icon-button-ink-color: var(--paper-orange-500);
+		    background-color: var(--paper-light-blue-500);
+		    color: white;
+		    border-radius: 3px;
+		    padding: 2px;
+		    width: 60px;
+		    height: 25px;
+		  }
+		input{
+			width: 100%;
+			margin: 1%;
+		}
+		
+		
+			#form{
+			    display: inline-block;
+		        vertical-align: top;
+		        @apply(--layout-horizontal);
+		        @apply(--layout-wrap);
+		        padding:1em;
+			}
+			#form div{
+ 				box-sizing: border-box;
+			}
+
+			#form .m12{
+ 				width: 100%;
+ 							}
+			#form .m9{
+ 				width: calc( 100% / 1.33333333333);
+			}
+
+			#form .m6{
+ 				width: calc( 100% / 2);
+
+
+			}
+			#form .m4{
+ 				width: calc( 100% / 3);
+
+
+			}	
+			#form .m3{
+ 				width: calc( 100% / 4);
+
+			}	
+			#accept{
+				text-align: right;
+				float:right;
+
+			}			
+			paper-toolbar{
+				--paper-toolbar-height:40px;
+			}
+			</style>
+	        <paper-toolbar>
+				<span class="title">Tarea </span>
+				<paper-checkbox>Finalizada</paper-checkbox>
+				<paper-icon-button  dialog-dismiss icon="clear"></paper-icon-button>
+			</paper-toolbar>
+			<iron-ajax id="ajaxin" handle-as="json" content-type='application/json' on-response="_iniResponse" method="GET"></iron-ajax>			
+			<iron-ajax id="ajaxout" handle-as="json" content-type='application/json' on-response="_ajaxResponse" on-error="_ajaxResponseError"></iron-ajax>
+
+	    <div id="formactions">
+
+
+	        <form is="iron-form" id="form">	    
+	    	<div class="m9">
+	    		<paper-input  name="description" label="Descripcion" value="{{data.description}}" placeholder="Descripcion"></paper-input>
+	        </div>
+				    <div class="m3" style="text-align: right">
+				    	<p>{{data.date_created}}</p>	
+
+				    </div>
+				    <div class="m3">
+				    <vaadin-date-picker id="mypicker" name="date_deliver" label="Fecha prevista" value="{{data.date_deliver}}"></vaadin-date-picker>
+
+				    </div>
+				    <div class="m3">
+				    <paper-input  name="time_proyected" label="Tiempo Previsto" value="{{data.time_proyected}}" placeholder="Tiempo Previsto"></paper-input>
+				    </div>
+
+				    <div class="m6">
+				    	<my-paper-progress timereal="{{timereal}}" timeproyected="{{data.time_proyected}}"></my-paper-progress>	
+					</div>
+	        <div class="m6">
+				    <div class="m12">
+						<iron-ajax  url="/json/groups" last-response="{{groups}}" auto></iron-ajax>
+						<vaadin-combo-box name="id_proyect" item-label-path="title" item-value-path="_id"  label="Grupo"  items="{{groups}}" value="{{data.id_group}}">
+						</vaadin-combo-box>
+					</div>
+				    <div >
+					    <div id="subtareas">
+						    <div class="subheader">
+						    <paper-icon-button icon="subject"></paper-icon-button>
+						    <input is="iron-input" id="subdescription"  placeholder="Nueva Subtarea" style="width:60%">	
+						    <input is="iron-input" id="subtime" placeholder="horas" style="width:10%">
+						    <paper-icon-button icon="subdirectory-arrow-left" class="blue" on-click="_addSubAccion"></paper-icon-button>
+	    	
+						    </div>				    
+
+								<template is="dom-repeat" items="{{subactions}}" as="subt">
+									<div class="f1">
+										<paper-checkbox>{{subt.description}}</paper-checkbox>
+										<span class="date">{{subt.date}}</span>	
+									</div>
+									<div class="f2">{{subt.time}} h</div>									
+									<div class="f3"><span class="deltarea" iditem$="{{index}}" on-click="_delSubAction">x</span></div>
+								</template>
+		        		</div>				    	
+				    </div> 	
+			   </div> 						
+	        <div class="m6">
+	        		  <div id="agenda">
+        		  		<paper-toolbar>
+						<paper-icon-button icon="add-circle-outline" title="nuevo Tarea "class="btnadd" on-click="_showFormDiary"></paper-icon-button>
+							<span  class="title">Horas</span> <span style="float:right">{{timereal}} h</span>
+						</paper-toolbar>
+						<template is="dom-repeat" items="{{diary}}">
+							<div class="f1">{{item.datetime}}</div><div class="f2">{{item.comment}}</div><div class="f3">{{item.time}} h</div>
+						</template>
+			</div>
+	        </div>
+	        <div class="m12">
+	        		<paper-icon-button id="buttondel" icon="delete" style="float:left" on-tap="_delItem"></paper-icon-button>
+			        <paper-fab noink icon="check" style="float:right" title="Guardar Cambios" on-tap="_confirmForm"></paper-fab>	        	
+	        </div>
+
+</form>
+
+	    </div>
+			<paper-dialog id="dial_diary">
+					<my-form-dyary-item  datain="{{formdiarydatain}}" dataout="{{formdiarydataout}}"></my-form-dyary-item>
+			</paper-dialog>
+			<paper-dialog id="dial_alert">
+					<my-modal-alert datain="{{modaldatain}}" dataout="{{modaldataout}}"></my-modal-alert>
+			</paper-dialog>	
+	</template>	    
+	<script>
+	var myArray = new Array();
+		(function () {
+			Polymer({
+				is: 'my-form-actions',
+				properties: {
+				  // datos de entrada
+				  datain:{
+				  	type: Object,
+				  	observer:"_initElement"
+				  },
+				  dataout:{
+				  	type: Object,
+				  	notify:true
+				  },				  	
+		          // datos del formulario modal
+		          timereal:{
+		          	type:Number,
+		          	value:0
+		          },		          
+		          interval:{
+		          	type:Number,
+		          	value:30
+		          },
+		          id_action:String,
+		          comment:{
+		            type:String,
+		            value:"Nueva Cita"
+		          },
+		          diary:{
+		          	type:Array,
+		          	value:[]
+		          },		          
+		          subdescription:String,
+		          subtime:String,
+		          formdiarydataout:{
+		          	type:String,
+		          	observer:"_confirmFormDiary"
+		          },
+
+		          modaldataout:{
+		          	type:String,
+		          	observer:"_delItemConfirm"
+		          },
+		          modaldatain:Object,
+		          dataajax:Object,
+ 				},
+
+ 				_initElement: function(){
+ 					console.log("en form actions"+this.datain._id)
+ 					if(this.datain._id){
+						this.$.ajaxin.url="/json/actions/"+this.datain._id;
+						this.$.ajaxin.generateRequest();
+ 					}
+					this.data=this.datain;
+					this.subactions=[];	
+									
+					this.$.mypicker.i18n={
+							  today: 'hoy',
+							  cancel: 'cancelar',
+							  firstDayOfWeek: 1,
+							  monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+							               'Julio','Agosto','Septiembre','Octubre','Nobiembre','Diciembre'],
+							  weekdaysShort: ['Do','Lu','Ma','Mi','Ju','Vi','Sa'],
+							  formatDate: function(d) {
+							    return [d.getFullYear(), d.getMonth() + 1,d.getDate() ].join('-');
+							  },
+							  formatTitle: function(monthName, fullYear) {
+							    return monthName + ' ' + fullYear;
+							  }
+					};
+
+ 				},
+ 				_iniResponse: function(e){
+ 						var data=e.target.lastResponse;
+
+						this.subactions=data.subactions ? data.subactions : [];
+						console.log(data.diary)
+						if(data.diary){
+							this.diary=data.diary;
+							var ttime=0;	
+						       for(key in data.diary){
+									ttime= ttime +data.diary[key].time;
+									console.log("tiempo:"+data.diary[key].time)
+						        }
+						    this.timereal=ttime;  
+						}
+						this.data=data;
+					    console.log("preparados datos form tiempo total:"+this.timereal);
+					    console.log(this.data)
+
+ 				},
+				_addSubAccion:function(e){
+ 					e.preventDefault();
+ 					des=this.$.subdescription.value;
+ 					time=this.$.subtime.value;
+ 					if(des){
+ 						var f=new Date();
+							now=f.getFullYear()+"-"+(f.getMonth()+1)+"-"+f.getDate()+" "+f.getHours()+":"+f.getMinutes();
+	 					obj={'description': des ,'time': time, 'date' : now }
+	 					this.push("subactions",obj);
+ 					}
+ 				},
+ 				_delSubAction:function(e){
+	 				iditem=e.target.getAttribute('iditem'); 
+					//var pos = this.id_action.map(function(a) { return a.id; }).indexOf(parseInt(id_acci));
+					this.splice("subactions", iditem, 1);
+ 				},
+	
+				_showFormDiary:function(){
+					this.formdiarydatain={
+				        'interval': this.interval, 
+				        'id_action' : this.datain._id				            
+					}
+		
+					this.$.dial_diary.toggle();						
+
+				},
+				_confirmFormDiary: function(){
+					console.log("DATOS EN actions");
+					console.log(this.dataajax.diary)					
+					console.log(this.formdiarydataout)
+					if(this.formdiarydataout){
+						var obj=this.formdiarydataout
+						if(obj.method=="POST"){
+							this.push("pdiary",obj.data);
+						}
+
+					}
+					this.$.dial_diary.close();
+					console.log(this.datadiary)
+				},
+
+ 				_delItem:function(){
+ 					console.log("borrar:"+this.datain._id);
+ 					console.log(this.datain);
+					this._delAjaxData(this.datain._id)
+
+	 				//id_acci=e.target.getAttribute('nid'); 					
+					//var pos = this.id_action.map(function(a) { return a.id; }).indexOf(parseInt(id_acci));
+					//this.splice("id_action", pos, 1);
+ 				},
+
+
+				_addZeroOneCaracter:function(dmunber){
+						return dmunber < 10 ? '0' + dmunber : '' + dmunber;
+				},
+
+ 				_delItem:function(){
+ 					console.log("borrar:"+this.datain._id)
+ 					var data={}
+ 					data.title="Borrar la Tarea "+this.datain._id;
+					data.menssaje="Se va ha eliminar la tarea completamente <br> ¿Desea Continuar? ";
+					this.modaldataout="";
+					this.modaldatain=data;
+					this.$.dial_alert.toggle();	
+ 				},
+ 				_delItemConfirm:function(){
+ 					if(this.modaldataout=="OK"){
+ 						console.log("llega _delItemConfirm")
+
+ 						this._delAjaxData(this.datain._id);
+ 					}
+ 				},
+ 				_confirmForm:function(){
+ 					console.log(this.datain);
+ 					if(this.datain._id){
+ 						method="PUT"; 
+ 					}else{
+ 						method="POST";	
+
+ 					}
+ 					this._addAjaxData(method)
+ 				}, 				
+ 				_createDataOut:function(){
+ 					var data=this.data;
+					delete data.diary;
+					data['subactions']= this.subactions ? this.subactions : [];	
+	
+					return data;
+ 				},
+				_addAjaxData:function(method){
+					this.$.ajaxout.method=method;
+					this.$.ajaxout.url="/json/actions";
+					this.$.ajaxout.body = JSON.stringify(this._createDataOut());
+					this.$.ajaxout.generateRequest();
+					console.log("datos enviado desde form:"+method);
+					console.log(this._createDataOut())
+				},
+				_delAjaxData:function(id_element){
+					this.$.ajaxout.method="DELETE";
+					this.$.ajaxout.url="/json/actions/"+id_element;
+					this.$.ajaxout.generateRequest();
+				},
+				_ajaxResponse: function(request) {
+					var obj={};
+					var data=this.$.ajaxout.lastResponse;
+					console.log("datos ajax que llega")
+					console.log(data);
+					if(data['status']){
+						obj.data=this._createDataOut();	
+						obj.method=data['method'];
+						if(data['method']=="POST"){
+							console.log("form POST")
+							obj.data._id=data['id'];
+						}	
+						if(data['method']=="PUT"){
+							console.log("form PUT")							
+							obj.pos=this.datain.idapp;
+						}
+						if(data['method']=="DELETE"){
+							console.log("form DELETE")							
+							obj.pos=this.datain.idapp;
+						}							
+						this.dataout=obj;							
+					}else{
+						console.log("hay un error")
+						this.modaldatain="ERROR: "+data['error'];
+						this.$.dial_alert.open();	
+					}
+				},
+				_ajaxResponseError: function(request) {
+					data=this.$.ajaxout.lastError;
+					console.log("_ajaxResponseError")
+					console.log(data);
+					this.modaldataajax="ERROR: ";
+					this.$.dial_actions.open();							
+				}
+
+			});
+		})();
+	</script>
+</dom-module>	    

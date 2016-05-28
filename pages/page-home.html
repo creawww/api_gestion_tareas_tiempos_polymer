@@ -1,0 +1,413 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="page-home">
+	<template>
+			 <style is="custom-style">
+			:host {
+				display: block;
+			}
+				#content{
+					@apply(--layout-horizontal);
+		      @apply(--layout-justified);
+					padding:3%;
+				}
+				#content>div{
+					@apply(--layout-flex);
+					@apply(--layout-vertical);
+					@apply(--layout-self-stretch);
+					border:1px solid #ccc;
+					margin-left: 1%: 
+
+				}
+				#Groupos paper-card{
+					--paper-card-background-color:#EF5350;
+						margin:2%;
+				}
+				#Groupos paper-card span{
+					display:block;
+						padding:1em;
+				}				
+				#tareas paper-card{
+					--paper-card-background-color:#C5CAE9;
+						margin:2%;
+				}
+				#tareas paper-card span{
+
+						padding:1em;
+				}
+
+		
+				.cred{
+					background:#EF5350
+				}
+				.corange{
+					background:#FF9800
+				}
+				.cgreen{
+					background:#4CAF50
+				}
+				.cblack{
+					background:#9E9E9E
+				}
+
+				.btnadd{
+					width: 50px;
+					height: 50px;
+				}
+		paper-icon-button {
+			float: right;
+		}
+		.cardtarea span{
+			display: inline;
+		}	
+		.cardtarea .date{
+			clear: right;
+			float: right;
+			color:#666;
+			font-size:.8em;
+		}
+
+		.cardtarea span{
+			padding: 1%!important;
+		}
+		.actiongroup{
+			display:inline;
+			color:red;
+		}
+
+		</style>
+			<paper-toolbar id="mainToolbar">
+				<paper-icon-button icon="menu" on-click="toggleMenu"></paper-icon-button>
+				<span class="title">GESTION DE AGENDA Y TIEMPOS </span>
+				</div>
+			</paper-toolbar>
+
+	    <div id="content">
+
+		<div id="Groupos">
+				<paper-toolbar>
+						<paper-icon-button icon="add-circle-outline" title="nuevo Groupo "class="btnadd" on-tap="_showFormGroup"></paper-icon-button>
+						<span  class="title">GRUPOS</span>
+						<paper-input class="searchInput" id="fltrEmployeeSearch" value="{{fltr_e_search::input}}" no-label-float>
+								<iron-icon icon="search" suffix></iron-icon>
+						</paper-input>
+				</paper-toolbar>
+
+<!--
+					<template is="dom-bind">
+					  <iron-ajax url="/json/Groups" last-response="{{Groups}}" auto></iron-ajax>
+					  <iron-list items="{{Groups}}" as="item">
+					    <template>
+							<paper-card>
+						  	<paper-icon-button icon="create" elemento="{{item}}" on-tap="_showFormGroup"></paper-icon-button>					
+						  	<span>{{item.title}}</span>
+							</paper-card>
+					    </template>
+					  </iron-list>
+					</template>
+-->
+
+
+				<span  class="title"></span>
+				<iron-ajax id="ajaxGroups" url="/json/groups" last-response="{{groups}}" auto></iron-ajax>
+				<template is="dom-repeat" items="{{groups}}">
+					<paper-card class="cdrap" draggable="true">
+				  	<paper-icon-button icon="create" idapp$="{{index}}" iditem$="{{item._id}}" on-click="_showFormGroup"></paper-icon-button>					
+				  	<span>{{item._id}} - {{item.title}}</span>
+
+					</paper-card>
+				</template>
+
+		</div>
+				<div id="agenda">
+					<paper-toolbar>
+						<paper-icon-button icon="arrow-back" on-click="_moveDay1"></paper-icon-button>
+						<paper-icon-button icon="date-range"></paper-icon-button>
+						<paper-icon-button icon="arrow-forward" on-click="_moveDay"></paper-icon-button>
+					</paper-toolbar>
+				<iron-ajax id="ajaxdiary" url="/json/diarydays" on-response="_ajaxResponseDiary"></iron-ajax>					
+					<my-diary  id="mydiary" dateini="{{showday}}" nday="1" interval="{{interval}}" on-evenexist="_showFormDiary" whours="{{ahours}}"> </my-diary>
+				</div>
+
+		<div id="tareas">
+				<paper-toolbar>
+						<paper-icon-button icon="add-circle-outline" title="nuevo Tarea "class="btnadd" on-click="_showFormAction"></paper-icon-button>
+						<span  class="title">Tareas Pendientes</span>
+				</paper-toolbar>
+
+				<span class="title"></span>
+				<iron-ajax id="ajaxactions" url="/json/actions" last-response="{{actions}}" auto></iron-ajax>
+				<template is="dom-repeat" items="{{actions}}">
+					<paper-card class="cardtarea" draggable="true" iditem$="{{item._id}}" idapp$="{{index}}"  on-dragstart="_drapini">
+						<paper-icon-button icon="create"   horizontal-align="right"  on-click="_showFormAction"></paper-icon-button>
+					  	<span><span class="actiongroup">{{item.id_group}}</span> - {{item.description}}</span>
+					  	<span class="date">{{item.date_end}}<br>{{item.date_created}}</span>
+					  	<my-paper-progress timereal="{{item.timereal}}" timeGrouped="{{item.timeGrouped}}" style="width:70%"></my-paper-progress>
+					</paper-card>
+				</template>
+		</div>
+			<paper-dialog id="dial_group" modal>
+					<my-form-groups  datain="{{formgroupdatain}}" dataout="{{formgroupdataout}}"></my-form-groups>
+			</paper-dialog>
+
+			<paper-dialog id="dial_diary" modal>
+					<my-form-dyary-item  datain="{{formdiarydatain}}" dataout="{{formdiarydataout}}"></my-form-dyary-item>
+			</paper-dialog>
+
+
+			<paper-dialog id="dial_actions" modal>
+					<my-form-actions datain="{{formactiondatain}}" dataout="{{formactiondataout}}"></my-form-actions>
+			</paper-dialog>
+
+
+
+	</template>
+
+	<script>
+		(function () {
+			Polymer({
+				is: 'page-home',
+				properties: {
+
+					// datos iniciales calendar
+					ahours:{
+						type:Array,
+						value:function(){
+							return  [{ 'hini':  "8:00",  "hfin" : "14:00" },
+									{ 'hini':  "15:00",  "hfin" : "20:00" }]
+							}
+					},
+					interval:{
+						type:Number,
+						value:30
+					},
+					groups:{
+						type:Array,
+					},
+					datadiary:{
+						type:Array
+
+					},
+					// datos form calendar
+					formdiarydatain:{
+						type:Object,
+						value:{}
+					},
+					formdiarydataout:{
+						type:Object,
+						observer:'_confirmFormDiary'
+					},
+					// datos form calendar
+					formgroupdatain:{
+						type:Object,
+					},
+					formgroupdataout:{
+						type:Object,
+						observer:'_confirmFormGroup'
+					},	
+					formactiondatain:{
+						type:Object,
+					},
+					formactiondataout:{
+						type:Object,
+						observer:'_confirmFormAction'
+					},
+								
+				},
+				ready:function(){
+					this._initElement();
+				},
+				_initElement:function(){
+					var d=new Date();
+					this.showday=d.getFullYear()+"-"+this._addZeroOneCaracter(d.getMonth()+1)+"-"+this._addZeroOneCaracter(d.getDate())
+					this.$.ajaxdiary.method="GET";
+					var query="?dateini="+this.showday+" 00:00&dateend="+this.showday+" 24:00"
+					this.$.ajaxdiary.url="/json/diarydays/"+query;
+					console.log("query diaris"+query)
+					this.$.ajaxdiary.generateRequest();
+				},
+				_drapini:function(e){
+					console.log("arrastando")
+					console.log(e.target.getAttribute('iditem'))
+
+					console.log("id tarea"+e.target.getAttribute('iditem'))
+					e.dataTransfer.setData("id_action", e.target.getAttribute('iditem'));
+
+				},
+
+
+
+ 				_ajaxResponseDiary: function(e){
+ 						var data=e.target.lastResponse;
+						this.datadiary=data;
+						// añadimos un poco de retardo para que de tiempo a formarse el padre y pueda detectar su tamaño (sino no lo pinta bien en la primera carga)
+						this.async(function() {
+							      this.$.mydiary._paintDataDay(data);
+							    }, 50);
+				
+
+
+ 				},
+
+				_moveDay:function(){
+					this._changeDate(1);
+
+				},
+				_moveDay1:function(){
+					this._changeDate(-1);
+				},
+				_changeDate: function(day){
+					d=new Date(this.showday);
+					d.setDate(d.getDate()+day); //sumar un dia
+					this.showday=d.getFullYear()+"-"+this._addZeroOneCaracter(d.getMonth()+1)+"-"+this._addZeroOneCaracter(d.getDate())
+
+					var query="?dateini="+this.showday+" 00:00:00&dateend="+this.showday+" 24:00:00"
+
+					this.$.ajaxdiary.url="/json/diarydays/"+query;
+					this.$.ajaxdiary.generateRequest();
+
+				},
+				_addZeroOneCaracter:function(dmunber){
+						return dmunber < 10 ? '0' + dmunber : '' + dmunber;
+				},
+				_showFormGroup:function(e){
+					if(e.currentTarget.getAttribute('idapp')){
+						var obj={}
+						obj['_id']=e.currentTarget.getAttribute('iditem');
+						obj['idapp']=e.currentTarget.getAttribute('idapp');
+
+					}else{
+						obj={};
+					}
+
+					this.formgroupdatain=obj;
+			
+					this.$.dial_group.open();
+				},
+				_confirmFormGroup:function(){
+					if(this.formgroupdataout){
+						var dataf=this.formgroupdataout;
+						if(dataf.method=="POST"){
+							this.push("groups",dataf.data);
+						}
+						if(dataf.method=="PUT"){
+							var pos=dataf.pos
+							var obj=dataf.data
+							this.splice("groups",pos, 1, obj);
+						}	
+						if(dataf.method=="DELETE"){
+							var pos=dataf.pos
+							var obj=dataf.data
+							this.splice("groups",pos, 1);
+						}					
+
+					}
+					this.$.dial_group.close();
+				},
+				_showFormDiary:function(e){
+					console.log("datos apbri form")
+					console.log(e.detail)
+					var dataf={};
+					if(e.detail.item){
+						dataf=this.datadiary[e.detail.item];
+						dataf['idapp']=e.detail.item;
+					}else{
+						dataf['datetime']= e.detail.dtime;
+				
+					}
+					if(e.detail.id_action){
+						dataf['id_action']=e.detail.id_action;
+					}					
+					dataf['interval']=this.interval;
+					this.formdiarydatain=dataf;
+												
+					this.$.dial_diary.open();						
+
+
+				},
+				_confirmFormDiary: function(){
+					if(this.formdiarydataout){
+						var obj=this.formdiarydataout
+						if(obj.method=="POST"){
+
+							if(this.datadiary){
+								var data=this.datadiary;
+							}else{
+								var data=[]
+							}
+							data.push(obj.data);
+
+							this.datadiary=data;
+							idapp=this.datadiary.length -1;
+						console.log(obj.data)
+
+						
+						this.$.mydiary._drawItem(obj.data.datetime , obj.data.time , obj.data.comment , idapp);	
+						}
+						if(this.formdiarydataout.method=="PUT"){
+							var pos=this.formdiarydataout.pos
+							var obj=this.formdiarydataout.data
+							this.splice("datadiary",pos, 1, obj);
+						
+							this.$.mydiary._deleteItem(obj.datetime)
+							this.$.mydiary._drawItem(obj.datetime , obj.time , obj.comment , pos);								
+
+						}	
+						if(this.formdiarydataout.method=="DELETE"){
+
+							var pos=this.formdiarydataout.pos
+							var obj=this.formdiarydataout.data
+						
+							this.splice("datadiary",pos, 1);
+
+							this.$.mydiary._deleteItem(obj.datetime)
+						}					
+
+					}
+
+					this.$.dial_diary.close();
+				},
+
+				_showFormAction:function(e){
+					console.log(e.currentTarget.parentNode.getAttribute('idapp'))
+					if(e.currentTarget.parentNode.getAttribute('idapp')){
+						var obj={}
+						obj['_id']=e.currentTarget.parentNode.getAttribute('iditem');
+						obj['idapp']=e.currentTarget.parentNode.getAttribute('idapp');
+
+					}else{
+						obj={};
+					}
+
+					this.formactiondatain=obj;
+					this.$.dial_actions.open();
+
+				},
+				
+				_confirmFormAction:function(){
+
+					if(this.formactiondataout){
+						if(this.formactiondataout.method=="POST"){
+							this.push("actions",this.formactiondataout.data);
+						}
+						if(this.formactiondataout.method=="PUT"){
+							var pos=this.formactiondataout.pos
+							var obj=this.formactiondataout.data
+
+							this.splice("actions",pos, 1, obj);
+						}	
+						if(this.formactiondataout.method=="DELETE"){
+							var pos=this.formactiondataout.pos
+							var obj=this.formactiondataout.data
+							this.splice("actions",pos, 1);
+						}					
+
+					}
+
+					this.$.dial_actions.close();
+				},			
+
+			});
+		})();
+	</script>
+</dom-module>

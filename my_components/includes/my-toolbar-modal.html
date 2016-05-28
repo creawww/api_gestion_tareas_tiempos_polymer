@@ -1,0 +1,32 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="my-proyects-form">
+	<template>
+		<style>
+			:host {
+				display: block;
+			    width: 800px;
+			    height: 100%;
+			    padding: 0!important;
+			    margin: 0!important;
+			}
+
+
+		</style>
+	        <paper-toolbar style="height:40px;">
+						<span style="height:40px; margin:0" class="title">{{title}}</span>
+			</paper-toolbar>		
+
+	</template>	    
+	<script>
+	var myArray = new Array();
+		(function () {
+			Polymer({
+				is: 'my-proyects-form',
+				properties: {
+					title:String,
+				 
+		          },
+			});
+		})();
+	</script>
+</dom-module>	    

@@ -1,0 +1,276 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="my-calendar">
+<template>
+	<style>
+
+		:host {
+			display: block;
+
+		}
+		#listyear{
+			float: right;
+			width: 25%;
+		}
+		paper-item{
+			color:#000;
+		}
+
+		.month>h1{
+				text-align: center;
+				padding: 0;
+				margin: 5px;
+			}
+		.month>.calendar div{
+				position: relative;
+				padding: 0.4em 0;
+				text-align: center;
+				float: left;
+				width: 14.28%;
+				height: 14.28%;
+				box-sizing: border-box;
+
+			}
+			.month>.calendar div[comment]:before {
+			    position : absolute;
+			    top:-20px;
+			    left:-20;
+			    font-size: 0.7em;
+			    content : attr(comment);
+			    background: rgba(0,0,0,.5);
+			    opacity : 0;
+			}
+			.month>.calendar div[comment]:hover:before {
+			    opacity : 1;
+			}
+
+			#titul span{
+				float:right;
+				font-size: 0.5
+			}
+			.calendar>.nomes{
+				color:#ccc;
+				text-decoration:line-through;
+			}
+			.calendar>.mes{
+				cursor: pointer;
+			}
+			.calendar>.mes:hover{
+			    opacity : 0.6;
+			}
+			.calendar>.activ{
+				background: rgb(193, 237, 21);
+				color:#fff;
+			}
+			.calendar>.tipo1{
+				background:rgb(84, 241, 203);
+				color:#fff;
+				border-radius: 50%;
+			}
+			.calendar>.tipo2{
+				background:rgb(241, 170, 12);
+				color:#fff;
+			}
+			.calendar>.tipo3{
+				background:rgb(251, 0, 241);
+				color:#fff;
+			}
+#content {
+  max-width: calc(6 * 16em);
+  min-width: 25em;
+  margin: 0 auto;
+  }
+
+.month {
+  padding: 0;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: white;
+  margin: .5em;
+	box-sizing:border-box;
+}
+
+.month p {
+  font-size: .8em;
+}
+
+
+/* FLEXBOX */
+
+#content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 1 calc(100% - 1em);
+}
+
+@media ( min-width:30em) {
+    .month {
+      flex: 0 1 calc(50% - 1em); /* 3 tarjetas en fila*/
+    }
+  }
+
+@media ( min-width:48em) {
+    .month {
+      flex: 0 1 calc(33% - 1em); /* 4 tarjetas en fila*/
+    }
+  }
+
+@media ( min-width:62em) {
+    .month {
+      flex: 0 1 calc(25% - 1em); /* 5 tarjetas en fila*/
+    }
+  }
+	</style>
+	<div id="content">
+
+		<template id="forMonths" is="dom-repeat" items="{{months}}" as="item1">
+					<div class="month">
+			 			<h1 class="titul">{{item1.namemonth}}</h1>
+							<div class="calendar">
+								<div class="name day">L</div>
+								<div class="name day">M</div>
+								<div class="name day">X</div>
+								<div class="name day">J</div>
+								<div class="name day">V</div>
+								<div class="name day">S</div>
+								<div class="name day">D</div>
+								<template is="dom-repeat" items="{{item1.days}}" as="item2">
+								    <div date$="{{item2.date}}" class$="{{item2.class}}" on-tap="_tapdate" comment="">{{item2.value}}</div>
+								</template>
+						</div>
+					</div>
+
+		</template>
+
+	</div>
+</template>
+
+<script>
+var ddate;
+var myArray = new Array();
+var fechahoy = new Date();
+	(function () {
+		Polymer({
+			is: 'my-calendar',
+			properties: {
+				// variables de this element iniciar el elementos
+					dateini:{
+						type: String,
+						observer:"_initelement",
+						},
+					dateend:{
+						type: String,
+						observer:"_initelement",
+						},
+					datadatein:{
+				      	type: Array,
+				      	observer:"_paintDataDay",
+
+					},
+
+				// Variables del elemento aplie-Month
+					months:{
+				      	type: Array,
+				      	value: function() {
+				        	return [];
+				      	}
+					},
+					dateout:{
+								type: String,
+					},
+			},
+			_initelement:function(){
+				console.log("datos en year"+this.dateini+"---"+this.dateend )
+				this._addmoths();
+
+				if(this.datadatein){
+					this._paintDataDay();
+				}
+
+			},
+			_addmoths:function(){
+				n_mes=new Array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiempre','Octubre','Noviembre','Diciembre');
+
+				if(this.dateini){
+					this.months=[];
+					sdate=new Date(this.dateini);
+					inidate=new Date(this.dateini);
+					enddate= this.dateend ? new Date(this.dateend) : new Date(inidate.getFullYear(),inidate.getMonth()+1 , 0);// ultimo dia del mes
+						do{
+								if( this.dateend && enddate<new Date(sdate.getFullYear(),sdate.getMonth()+1,1)) {
+										fend=this.dateend;
+									}else{
+										fend=false;
+									}
+									fini=sdate.getFullYear()+"-"+(sdate.getMonth()+1)+"-"+sdate.getDate()
+									this.push('months', { 'namemonth': n_mes[sdate.getMonth()]+" "+sdate.getFullYear(),'days': this._drawCalendar(fini,fend) });
+									sdate=new Date(sdate.getFullYear(),sdate.getMonth()+1,1);
+						}while (sdate<=enddate)
+				}else{
+					this.$.content.innerHTML="Falta parametro de inicial en componente my-year";
+				}
+			},
+			_drawCalendar:function (fini,ffin){
+				days=[];
+				sday=new Date(fini.split("-")[0],fini.split("-")[1]-1,1,1);
+				dinidate=new Date(fini+" 00:00:01");
+				denddate= ffin ? new Date(ffin+" 02:00:00") : new Date( dinidate.getFullYear() , dinidate.getMonth()+1 , 0,2,0,0);
+				dayoweek=sday.getDay();
+				// sumar y restar dias
+				sday.setDate(sday.getDate()-parseInt(dayoweek-1));
+					for(i=1;i<=42;i++){
+						if(sday>=dinidate && sday<=denddate){
+							ddate=sday.getFullYear()+"-"+this._addZeroOneCaracter(sday.getMonth()+1)+"-"+this._addZeroOneCaracter(sday.getDate());
+							dclass='mes';
+							dvalue=sday.getDate();
+						}else{
+							ddate="";
+							dclass='nomes';
+							dvalue=sday.getDate();
+						}
+
+						days.push({ 'date': ddate ,'class': dclass , 'value': dvalue  });
+						//console.log("array dias :"+JSON.stringify(this.days));
+						sday.setDate(sday.getDate()+1);
+					}
+					return days
+				},
+
+				_paintDataDay: function(){
+					dates=this.datadatein
+					for (var key in dates) {
+						if(Polymer.dom(this.root).querySelector("div[date='"+dates[key].date+"']")){
+							Polymer.dom(this.root).querySelector("div[date='"+dates[key].date+"']").classList.add(dates[key].type);
+							Polymer.dom(this.root).querySelector("div[date='"+dates[key].date+"']").setAttribute("comment", dates[key].comment);
+						}
+					}
+				},
+
+				_addZeroOneCaracter:function(dmunber){
+						return dmunber < 10 ? '0' + dmunber : '' + dmunber;
+				},
+
+				_tapdate:function(e) {
+					if(e.target.classList.contains("mes"))
+						this.dataexit=e.target.getAttribute('date');
+						dtype=e.target.className.split(" ")
+						for (i=0; i<dtype.length; i++){
+							if (dtype[i].substring(4, 0)=="tipo")
+								ddtype=dtype[i];
+							else
+								ddtype="";
+						}
+						this.fire('evenexist', {'date': e.target.getAttribute('date'),'comment': e.target.getAttribute('comment'),'type': ddtype});
+					}
+		});
+	})();
+</script>
+</dom-module>

@@ -1,0 +1,11 @@
+{"id":"1","title":"Novaterra - Carteleria Carrera solidaria",
+"description":"descripcion de proyecto",
+"date_crea":"2016-05-03 13:20:55",
+"date_mod":null,
+"actions":[
+{"id" : 1, "description": "Presupuesto pagina web", "proyect_id": 0, "timereal": 20, "timeproyected": "5+30" },
+{"id" : 2,  "description": "Diseños de logotipo", "proyect_id": 0, "timereal": 10, "timeproyected": "20"},
+{"id" : 3,  "description": "Cambiar textos de la web", "proyect_id": 0, "timereal": 35, "timeproyected": "10+20"},
+{"id" : 4,  "description": "Presupuesto pagina web", "proyect_id": 0, "timereal": 30, "timeproyected": "30"}
+]
+}

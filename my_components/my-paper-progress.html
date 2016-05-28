@@ -1,0 +1,58 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="my-paper-progress">
+	<template>
+		<style>
+			:host {
+				display: block;
+
+			}
+		.progreso{
+			width: 100%;
+			border:1px solid #fff;
+			border-radius: 4px;
+			background: none!important;
+			margin: 1%;
+			padding: 1%;
+		}
+		paper-progress{
+			width: 100%;
+		}			
+		</style>
+			<div class="progreso">
+				<span>{{porcen}}% - {{timeproyected}} / {{timereal}}</span>
+				<paper-progress  value="{{porcen}}" max="100"></paper-progress>	
+			</div>
+	</template>	    
+	<script>
+	var myArray = new Array();
+		(function () {
+			Polymer({
+				is: 'my-paper-progress',
+				properties: {
+				  // datos de entrada
+				  timereal:{
+				  	type: Number,
+				  	value:0,
+				  	observer:"_calData"
+				  },
+				  timeproyected:{
+				  	type: String,
+				  	value: 30,
+				  	observer:"_calData"				  	
+
+				  },
+				  porcen:{
+				  	type: Number,
+
+				  },				  				  
+ 				},
+ 				_calData:function(){
+ 					if(this.timeproyected && this.timereal>0)
+ 					this.porcen=Math.round((eval(this.timereal/this.timeproyected))*100);
+					//console.log(this.porcen+"% "+this.timeproyected+"-->"+this.timereal) 			
+ 				}
+
+			});
+		})();
+	</script>
+</dom-module>	    

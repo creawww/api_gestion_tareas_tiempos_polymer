@@ -1,0 +1,47 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="my-modal-alert">
+	<template>
+		<style>
+			:host {
+				display: block;
+			    width: 400px;
+			    height: 300px;
+			}
+
+		</style>
+	        <div>
+				<span class="title">{{datain.title}}</span>
+				<paper-icon-button icon="clear"  dialog-dismiss></paper-icon-button>
+			</div>
+		
+	    <div id="formdiary">
+				<h2>{{datain.menssaje}}</p>
+		<div class="buttons">
+			 <paper-button dialog-confirm  on-tap="_confirmAlert">Aceptar</paper-button>
+		 </div>
+		</div>	    
+	</template>	    
+	<script>
+		(function () {
+			Polymer({
+				is: 'my-modal-alert',
+				properties: {
+				  // datos de entrada
+				  title:String,
+				  menssaje:String,
+					  dataout:{
+					  	type:String,
+					  	value:"",
+					  	notify:true
+				  }
+ 				},
+ 				_confirmAlert:function(){
+ 					this.dataout="OK";
+ 					console.log ("confirma alert")
+ 				}
+
+ 
+			});
+		})();
+	</script>
+</dom-module>	    

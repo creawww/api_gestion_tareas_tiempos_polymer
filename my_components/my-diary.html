@@ -1,0 +1,304 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="my-diary">
+	<template>
+		<style>
+
+			:host {
+				display: block;
+
+			}
+			#content {
+					@apply(--layout-horizontal);
+				}
+			h1{
+				font-size: 0.9em;
+				text-align: center;
+				padding: 10px 0 5px 0;
+				margin: 0;
+				background: rgb(209, 209, 209);
+				border-left: 1px solid #fff;
+			}
+			.textred{
+				color:red;
+			}
+			.day{
+			  @apply(--layout-flex);
+				width: 20%;
+				height: 100%;
+				display: inline-block;
+				border-left: 1px solid rgb(209, 209, 209);
+			}
+			.day div{
+				text-align: left;
+				float: left;
+				width: 100%;
+				height: 20px;
+				font-size: 0.9em;
+				border-bottom: 1px solid rgb(209, 209, 209);
+				cursor: pointer;
+			}
+			.day div:hover{
+				background: rgb(209, 209, 209);
+			}
+			#hours{
+				width: 50px;
+				padding-right: 5px;
+				float: left;
+			}
+			#hours div{
+				text-align: right;
+				width: 100%;
+				height: 20px;
+				font-size: 0.9em;
+				border-bottom: 1px solid  rgb(209, 209, 209);
+			}
+			div.cita{
+				position: absolute;
+				padding:2px 15px;
+			 	border: 1px solid red;
+			 	border-radius: 3px;
+				color:#fff;
+				box-sizing:border-box;
+			}
+			.color-red{
+					background-color: rgba(239,83,80,0.5);
+				}
+				.color-orange{
+					background-color: rgba(255,152,0,0.5);
+				}
+				.color-green{
+					background-color: rgba(76,175,80,0.5);
+				}
+				.color-black{
+					background-color: rgba(158,158,158,0.5);					
+				}
+		</style>
+		<div id="content">
+			<div id="hours">
+				 <h1>horas</h1>
+				<template is="dom-repeat" items="{{dtimes}}">
+						<div>[[item.dtime]]</div>
+				</template>
+			</div>
+			<template is="dom-repeat" items="{{days}}" as="item1">
+				<div class="day">
+		 			<h1>{{item1.nameday}}</h1>
+
+							<template is="dom-repeat" items="{{item1.hours}}" as="item2">
+									<div dtime$="{{item2.idhour}}" on-tap="_tapdate" on-drop="_dropData" on-dragover="_drop2" on-dragleave="_drop3"></div>
+							</template>
+
+				</div>
+			</template>
+
+				</div>
+	</template>
+
+	<script>
+		(function () {
+			Polymer({
+				is: 'my-diary',
+				properties: {
+					whours:{
+						type:Array,
+						value:function(){
+							return [{ 'hini':  "00:00",  "hfin" : "24:00" }]
+
+							}
+					},
+					dateini:{
+						type:String,
+						observer:"_initElement"
+					},
+					dtimes:{
+					  	type: Array,
+					},
+					datadatein:{
+					  	type: Array,
+						observer:"_paintDataDay",
+					},
+					days:{
+					  	type: Array,
+					},
+					interval:{
+						type:Number,
+						value: 30
+					},
+					nday:{
+						type:Number,
+						value:2
+					}
+				},
+				_initElement:function(){
+				if(typeof this.dateini === 'string' || this.datadatein ){
+						if(this.dateini=this._validateDate(this.dateini)){
+							this._deletaDataPaint();
+							this.dtimes=[];
+							this._drawHours();
+							this._drawDays();
+							/*
+							if(this.datadatein){
+								this.async(function() {
+							      this._paintDataDay(this.datadatein);
+							    }, 50);
+								
+							}
+							*/
+						}
+					}
+				},
+				_drop2:function(e){
+					e.target.style.background="#C5CAE9";					
+					e.preventDefault();
+				},	
+				_drop3:function(e){
+					e.target.style.background="#fff";					
+				},							
+				_dropData:function(e){
+					e.target.style.background="#fff";	
+					var date=e.target.getAttribute('dtime');
+					var idaction = e.dataTransfer.getData("id_action");
+					this.fire('evenexist', {'dtime': date, 'id_action': idaction});
+				},
+				_drawHours:function(){
+					arr=this.whours;
+					this.dtime=[];
+					date="2000-1-1"
+					for (var key in arr) {
+							fini= new Date(date+" "+arr[key].hini)
+							ffin= new Date(date+" "+arr[key].hfin)
+							do{
+
+								fhoras=this._addZeroOneCaracter(fini.getHours());
+								fminutos=this._addZeroOneCaracter(fini.getMinutes());
+								hora=fhoras+":"+fminutos;
+								this.push('dtimes', {'dtime': hora });
+								fini.setMinutes(fini.getMinutes()+this.interval);
+							}while (fini<ffin)
+						}
+				},
+				_createhoursday:function (date){
+							idhours=[];
+							arr=this.dtimes
+							for (var key in arr) {
+										idhours.push({ 'idhour': date+" "+arr[key].dtime});
+								}
+							return idhours;
+			},
+				_drawDays:function(){
+							this.days=[];
+							n_semana=new Array('Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado');
+							if(this.dateini){
+								date1=this.dateini;
+								for (i=0;i<this.nday;i++){
+										d=new Date(date1);
+										titulday=date1+" - "+n_semana[d.getDay()];
+										idhour = this._createhoursday(date1);
+										this.push('days', { 'day': date1,'nameday': titulday, 'hours':idhour});
+										date1=this._addday(date1,1);
+								}
+
+							}else{
+								this.$.content.innerHTML="Falta parametro de inicial en componente diary";
+							}
+
+				},
+				_addday:function (date,incre){
+					ndate= new Date(date);
+					ndate.setDate(ndate.getDate() + incre);
+							return ndate.getFullYear()+"-"+this._addZeroOneCaracter(ndate.getMonth()+1)+"-"+this._addZeroOneCaracter(ndate.getDate())
+				},
+
+				_paintDataDay: function(data){
+					if(data){
+						var	item=data;
+						for(var i=0; i< item.length; i++){
+								this._drawItem(item[i].datetime , item[i].time , item[i].text , i)
+						}						
+					}
+
+
+				},
+	
+				_deletaDataPaint:function(){
+					eleme=Polymer.dom(this.root).querySelectorAll("div.cita");
+					for(i=0;i<eleme.length;i++){
+						//console.log("borra"+i)
+						eleme[i].parentNode.removeChild(eleme[i]);
+					}
+				},
+				_drawItem:function(date,time,texto,item){
+					date=date.split(":")[0]+":"+date.split(":")[1];
+
+					//console.log("se quiere pintar:"+date+","+time+","+texto+","+item);
+					if(Polymer.dom(this.root).querySelector("div[dtime='"+date+"']")){
+						//console.log("pinta"+date+","+time+","+texto)
+						eparent=Polymer.dom(this.root).querySelector("div[dtime='"+date+"']");
+						elem=document.createElement('div');
+						texto=document.createTextNode(texto);
+						//añadido  style-scope my-month porque sino no acepta los estilos
+						elem.setAttribute('class','color-orange cita style-scope my-diary');
+						var salto=Math.round((60*time)/this.interval);
+						dur=salto*21 //Diferencias de horas por 21 px de cada celda
+						elem.setAttribute('style','width: '+(eparent.offsetWidth-20)+"px; height: "+dur+"px");
+						elem.appendChild(texto);
+						eparent.appendChild(elem);
+						eparent.setAttribute('item',item);						
+					}
+
+				},
+				_deleteItem:function(datetime){
+					if(Polymer.dom(this.root).querySelector("div[dtime='"+datetime+"']")){
+						element=Polymer.dom(this.root).querySelector("div[dtime='"+datetime+"']");
+						if(element.firstChild){
+							element.removeChild(element.firstChild);
+						}
+
+					}
+
+				},
+				_changeColorItem:function(datetime,clase){
+					if(Polymer.dom(this.root).querySelector("div[dtime='"+pini+"']")){
+						element=Polymer.dom(this.root).querySelector("div[dtime='"+datetime+"']");
+						if(element.firstChild.className.match(/color/g)){
+							//console.log("si tiene color");
+							element.firstChild.classList.remove("color-orange","color-red","color-black","color-green");
+							element.firstChild.classList.add(clase);
+						}
+
+					}
+				},	
+				_addZeroOneCaracter:function(dmunber){
+						return dmunber < 10 ? '0' + dmunber : '' + dmunber;
+				},
+				_validateDate:function(ddate){
+							adate=ddate.split("-");
+							year=adate[0];
+							month=adate[1];
+							day=adate[2];
+							dteDate=new Date(year,month,day);
+					    if ((parseInt(day)==dteDate.getDate()) && (parseInt(month)==dteDate.getMonth()) && (year==dteDate.getFullYear())){
+									month= month.length>1 ? ""+month : "0"+month;
+									day= day.length>1 ? ""+day : "0"+day;
+									return 	year+"-"+month+"-"+day;
+							}else{
+									return 	false;
+							}
+				},
+				_tapdate:function(e,detail) {
+					if(e.target.getAttribute('dtime')){
+						element=e.target.getAttribute('dtime');
+					}
+					if(e.target.parentNode.getAttribute('dtime')){
+						element=e.target.parentNode.getAttribute('dtime');
+					}
+					item=e.target.parentNode.getAttribute('item') ? e.target.parentNode.getAttribute('item') : null ;
+					if(element){
+						this.fire('evenexist', {'dtime': element, 'item': item});						
+					}
+		      }
+
+			});
+		})();
+	</script>
+</dom-module>

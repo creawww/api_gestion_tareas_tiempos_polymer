@@ -1,0 +1,43 @@
+DATOS A RECIBIR EN EL FORMULARIO 
+
+{"id" : "573587777f8b9a7f0f8b4567",
+  "description": "Presupuesto pagina web",
+  "proyect_id": 0 ,
+  "user_id": 0 ,
+  "time_proyected" : 8 ,
+  "date_deliver" : "2016-02-01",
+  "date_end" : "",
+  "diary":[ {"id" : "573587777f8b9a7f0f8b4567","description" :" Primera visita al cliente","date": "2016-01-01", "time": 2.5 },
+            {"id" : "573587777f8b9a7f0f8b4567","description" :" Analisis del mercado y información inicial","date": "2016-01-01", "time": 1.5 },
+            {"id" : "573587777f8b9a7f0f8b4567","description" :" Redaccion de presupuesto y envio", "date": "2016-01-02", "time": 2 }
+  ],
+  "subactions":[ {"description" :" Retocar logotipo","date": "2016-01-01", "time": 2.5 },
+            {"description" :" Cambiar textos de la pagina quienes somos","date": "2016-01-01 16:00:21", "time": 1.5 },
+            {"description" :" Poner google analitiycs", "date": "2016-01-02 12:00:21", "time": 2 }
+  ],
+
+  "date_created": "2016-01-01 12:00:21", 
+  "date_update": "2016-02-01 12:00:21"  
+  }
+
+
+
+DATOS A GUARDAR DE LAS TAREAS
+
+
+{"id" : "573587777f8b9a7f0f8b4567",
+  "description": "Presupuesto pagina web",
+  "proyect_id": 0 ,
+  "user_id": 0 ,
+  "time_proyected" : 8 ,
+  "date_deliver" : "2016-02-01",
+  "date_end" : "",
+  "diary":[ "573587777f8b9a7f0f8b4567", "573587777f8b9a7f0f8b4567", "573587777f8b9a7f0f8b4567"],
+  "subactions":[ {"description" :" Retocar logotipo","date": "2016-01-01", "time": 2.5 },
+            {"description" :" Cambiar textos de la pagina quienes somos","date": "2016-01-01 16:00:21", "time": 1.5 },
+            {"description" :" Poner google analitiycs", "date": "2016-01-02 12:00:21", "time": 2 }
+  ],
+
+  "date_created": "2016-01-01 12:00:21", 
+  "date_update": "2016-02-01 12:00:21"  
+  }

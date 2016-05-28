@@ -1,0 +1,346 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="my-form-dyary-item">
+	<template>
+		<style>
+			:host {
+				display: block;
+			    width: 400px;
+			    height: 100%;
+			    padding: 0!important;
+			    margin: 0!important;
+			}
+		paper-button.custom {
+		    --paper-button-ink-color: var(--paper-pink-a200);
+		    --paper-button-flat-keyboard-focus: {
+		      background-color: var(--paper-pink-a200);
+		      color: white !important;
+		    };
+		    --paper-button-raised-keyboard-focus: {
+		      background-color: var(--paper-pink-a200) !important;
+		      color: white !important;
+		    };
+		  }
+		  paper-button.custom:hover {
+		    background-color: var(--paper-indigo-100);
+		  }
+		  paper-button.indigo {
+		    background-color: var(--paper-indigo-500);
+		    color: white;
+		    --paper-button-raised-keyboard-focus: {
+		      background-color: var(--paper-pink-a200) !important;
+		      color: white !important;
+		    };
+		  }
+			#form{
+			    display: inline-block;
+		        vertical-align: top;
+		        @apply(--layout-horizontal);
+		        @apply(--layout-wrap);
+		        padding:1em;
+			}
+			#form div{
+ 				box-sizing: border-box;		        
+			}
+
+			#form .m12{
+ 				width: 100%;
+			}
+			#form .m6{
+ 				width: calc( (100%) / 2);
+
+			}
+			#form .m4{
+ 				width: calc( (100%) / 3);
+			}
+			#accept{
+				display: inline-block;
+				position: relative;
+				top:0;
+				right: 0;
+			}
+			paper-toolbar{
+				--paper-toolbar-height:40px;
+			}
+		</style>
+	        <paper-toolbar>
+				<span class="title">Tarea</span>
+				<paper-icon-button icon="clear" dialog-dismiss></paper-icon-button>
+			</paper-toolbar>
+		
+	    <div id="formdiary">
+			<iron-ajax id="ajaxout" handle-as="json" content-type='application/json' on-response="_ajaxResponse" on-error="_ajaxResponseError"></iron-ajax>
+
+	        <form is="iron-form" id="form">
+			        <div class="m6">
+			          <paper-input  name="date" label="fecha" value="{{date}}">
+									<paper-icon-button prefix on-click="_avanDate" icon="chevron-left" alt="+ {{interval}}" title="+ {{interval}}"></paper-icon-button>
+									<paper-icon-button suffix on-click="_backDate" icon="chevron-right" alt="- {{interval}}" title="- {{interval}}"></paper-icon-button>
+			          </paper-input>
+			        </div>
+			        <div class="m6">
+			          <paper-input label=" Horas Duración"  value="{{time}}">
+									<paper-icon-button prefix on-click="_avanTime" icon="chevron-left" alt="+ {{interval}}" title="+ {{interval}}"></paper-icon-button>
+									<paper-icon-button suffix on-click="_backTime" icon="chevron-right" alt="- {{interval}}" title="- {{interval}}"></paper-icon-button>
+
+			          </paper-input>
+			        </div>			        
+			        <div class="m6">
+			          <paper-input label="Hora inicio" value="{{time_start}}">
+									<paper-icon-button prefix on-click="_avanStartTime" icon="chevron-left" alt="+ {{interval}}" title="+ {{interval}}"></paper-icon-button>
+									<paper-icon-button suffix on-click="_backStartTime" icon="chevron-right" alt="- {{interval}}" title="- {{interval}}"></paper-icon-button>
+
+			          </paper-input>
+			        </div>
+			        <div class="m6">
+			          <paper-input label="Hora Fin" value="{{time_end}}">
+									<paper-icon-button prefix on-click="_avanEndTime" icon="chevron-left" alt="+ {{interval}}" title="+ {{interval}}"></paper-icon-button>
+									<paper-icon-button suffix on-click="_backEndTime" icon="chevron-right" alt="- {{interval}}" title="- {{interval}}"></paper-icon-button>
+			          </paper-input>
+			        </div>
+			        <div class="m12">
+								<paper-textarea id="fcomments" label="Comentarios" value="{{comment}}"></paper-textarea>
+			        </div>	        
+			        <div class="m12" id="acciones">	        
+			        <div class="m12">
+						<iron-ajax  url="/json/actions" last-response="{{actions}}" auto></iron-ajax>
+						<vaadin-combo-box id="factions" item-label-path="description" name="actions" item-value-path="_id"  label="Tarea"  items="{{actions}}" value="{{id_action}}">
+						</vaadin-combo-box>
+					</div>
+			        </div>
+			        <div>
+			       <paper-icon-button id="buttondel" icon="delete" style="float:left" on-tap="_delItem"></paper-icon-button> 
+        
+			        <paper-fab noink icon="check" style="float:right" title="Confirmar y guardar" on-tap="_confirmForm"></paper-fab>
+			        </div>
+
+	         </form>
+	    </div>
+	   			<paper-dialog id="dial_alert">
+					<my-modal-alert datain="{{modaldatain}}" dataout="{{modaldataout}}"></my-modal-alert>
+			</paper-dialog>	 
+	</template>	    
+	<script>
+	var myArray = new Array();
+		(function () {
+			Polymer({
+				is: 'my-form-dyary-item',
+				properties: {
+				  // datos de entrada
+				  datain:{
+				  	type: Object,
+				  	observer:"_initElement"
+				  },
+				  dataout:{
+				  	type: Object,
+				  	notify:true,
+				  },				  	
+		          // datos del formulario modal
+		          date:{
+		          	type:String,
+		          },
+		          time_start:{
+		          	type:String,
+		          	value:function(){
+		          		var f=new Date();
+		          		return f.getHours()+":"+f.getMinutes();
+		          	},
+		          	observer:"_addChangeTime"
+		          },	
+		          time_end:{
+		          	type:String,
+		          	observer:"_addChangeTime"		          	
+		          },
+		          time:{
+		          	type:Number,
+		          	observer:"_addChangeTime"		          	
+		          },	
+		          interval:Number,
+		          id_action:{
+		            type:Number,
+		            observer:"_changeAction"
+		          },
+		          comment:{
+		            type:String,
+		          },
+		          actions:{
+		          	type:Object
+		          },
+		          modaldataout:{
+		          	type:String,
+		          	observer:"_delItemConfirm"
+		          },
+		          modaldatain:Object
+ 				},
+ 				_initElement: function(){
+ 					console.log("datos que llegas a form diary")
+ 					console.log(this.datain)
+	
+	 				if(this.datain.datetime){
+	 					//id_action ,description ,datetime ,time
+	 					//console.log("date: "+this.datain.date);
+	 					datep=this.datain.datetime.split(" ");
+	 					this.date=datep[0];
+						this.time_start=datep[1].split(":")[0]+":"+datep[1].split(":")[1];
+					}else{
+						f=new Date();
+		          		this.date= f.getFullYear()+"-"+(f.getMonth()+1)+"-"+f.getDate();
+						this.time_start=f.getHours()+":00";
+					}
+					//this.actions=data.a ? data.comment : "";
+					this.comment=this.datain.comment ? this.datain.comment : "";
+ 					this.id_action=this.datain.id_action ? this.datain.id_action : null;					
+ 					this.time=this.datain.time ? this.datain.time : Math.round((this.datain.interval/60)*10)/10;
+					this.time_end=this.datain.time ? this._changeTime(this.time_start,(60*this.datain.time)/this.datain.interval) : this._changeTime(this.time_start,1);
+					//if(this.datain.idapp){
+					//	this.$.buttondel.style.display="none";
+					//}
+
+
+
+ 				},
+				_avanDate:function(){
+					this.date=this._changeDate(this.date,-1);
+				},
+				_backDate:function(){
+					this.date=this._changeDate(this.date,1);
+				},
+
+				_avanTime:function(){
+					this.time_end=this._changeTime(this.time_end,-1);
+				},
+				_backTime:function(){
+					this.time_end=this._changeTime(this.time_end,1)					
+				},
+				
+		
+				_avanStartTime:function(){
+					this.time_start=this._changeTime(this.time_start,-1);
+				},
+				_backStartTime:function(){
+					this.time_start=this._changeTime(this.time_start,1);
+				
+				},
+				
+				_avanEndTime:function(){
+					this.time_end=this._changeTime(this.time_end,-1);
+				},
+				_backEndTime:function(){
+					this.time_end=this._changeTime(this.time_end,1);
+				},
+				_addChangeTime:function(){
+					this.time=this._diferentHours(this.time_start,this.time_end)
+				},
+
+				_changeTime:function(time, v){
+					t=new Date("2000-01-01 "+time+":00")
+					t.setMinutes(t.getMinutes()+(v*this.datain.interval));
+					return t.getHours()+":"+this._addZeroOneCaracter(t.getMinutes());
+				},
+				_changeDifTime:function(time, v){
+				return ((this.datain.interval)/60)+v*time
+
+				},
+				_diferentHours:function(time1, time2){
+					t1=new Date("2000-01-01 "+time1+":00")
+					t2=new Date("2000-01-01 "+time2+":00")
+					data=((t2-t1)/60000)/60;
+
+					return data;
+				},				
+				_changeDate:function(date, v){
+					t=new Date(date)
+					d.setDate(d.getDate()+v); //sumar un dia
+					return d.getFullYear()+"-"+this._addZeroOneCaracter(d.getMonth()+1)+"-"+this._addZeroOneCaracter(d.getDate())
+				},
+
+				_changeAction:function(){
+					/*
+					if(this.id_action){
+ 						var data=this.comment;
+	 					this.comment= this.$.factions.selectedItem.description +" | "+ data
+
+	 				}
+	 				*/
+				},
+
+				_addZeroOneCaracter:function(dmunber){
+						return dmunber < 10 ? '0' + dmunber : '' + dmunber;
+				},
+
+
+
+ 				_delItem:function(){
+ 					var data={}
+ 					data.title="Borrar cita "+this.datain._id;
+					data.menssaje="Se va ha eliminar la cita completamente <br> ¿Desea Continuar? ";
+					this.modaldataout="";
+					this.modaldatain=data;
+					this.$.dial_alert.toggle();	
+ 				},
+ 				_delItemConfirm:function(){
+ 					if(this.modaldataout=="OK"){
+ 						this._delAjaxData(this.datain._id);
+ 					}
+ 				},
+
+
+
+ 				_confirmForm:function(){
+
+ 					if(this.datain._id){
+ 						method="PUT"; 
+ 					}else{
+ 						method="POST";	
+ 					}
+ 					this._addAjaxData(method)
+ 				}, 				
+ 				_createDataOut:function(){
+ 					return { 'datetime': this.date+" "+this.time_start,
+							  'time':this.time,
+							  'id_action': this.id_action,
+							  'comment': this.comment,
+						  }
+ 				},
+				_addAjaxData:function(method){
+					this.$.ajaxout.method=method;
+					this.$.ajaxout.url="/json/diarydays";
+					this.$.ajaxout.body = JSON.stringify(this._createDataOut());
+					this.$.ajaxout.generateRequest();
+				},
+				_delAjaxData:function(id_element){
+					this.$.ajaxout.method="DELETE";
+					this.$.ajaxout.url="/json/diarydays/"+id_element;
+					this.$.ajaxout.generateRequest();
+				},
+				_ajaxResponse: function(request) {
+					var obj={};
+					var data=this.$.ajaxout.lastResponse;
+					if(data['status']){
+						obj.data=this._createDataOut();	
+						obj.method=data['method'];
+						if(data['method']=="POST"){
+							obj.data._id=data['id'];
+						}	
+						if(data['method']=="PUT"){
+				
+							obj.pos=this.datain.idapp;
+						}
+						if(data['method']=="DELETE"){
+					
+							obj.pos=this.datain.idapp;
+						}							
+						this.dataout=obj;							
+					}else{
+						this.modaldatain="ERROR: "+data['error'];
+						this.$.dial_alert.open();	
+					}
+				},
+				_ajaxResponseError: function(request) {
+					data=this.$.ajaxout.lastError;
+					this.modaldatain="ERROR: ";
+					this.$.dial_actions.open();							
+				}
+			});
+		})();
+	</script>
+</dom-module>	    

@@ -1,0 +1,282 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="my-form-groups">
+	<template>
+		<style is="custom-style">
+			:host {
+				display: block;
+			    width: 1100px;
+			    height: 100%;
+			    padding: 0!important;
+			    margin: 0!important;
+			}
+			#formGroup{
+				padding: 10px;
+			}
+			paper-icon-button {
+				float: right;
+			}
+			#tareas paper-card{
+				display:block;
+				--paper-card-background-color:#C5CAE9;
+					margin:2%;
+			}
+			#tareas paper-card span{
+				display:block;
+					padding:1em;
+			}
+			.cardtarea span{
+				display: inline;
+			}	
+			.cardtarea .date{
+				clear: right;
+				float: right;
+				color:#666;
+				font-size:.8em;
+			}
+			.progreso{
+				width: 100%;
+				border:1px solid #fff;
+				border-radius: 4px;
+				background: none!important;
+				margin: 1%;
+				padding: 1%;
+ 				box-sizing: border-box;				
+			}
+			.cardtarea span{
+				padding: 1%!important;
+			}
+			.buttons{
+				clear: both;
+			}
+			#form{
+			    display: inline-block;
+		        vertical-align: top;
+		        @apply(--layout-horizontal);
+		        @apply(--layout-wrap);
+		        padding:1em;
+			}
+			#form div{
+ 				box-sizing: border-box;		        
+			}
+
+			#form .m12{
+ 				width: 100%;
+			}
+			#form .m6{
+ 				width: calc( (100%) / 2);
+
+			}
+			#accept{
+
+				float:right;
+
+			}
+			iron-autogrow-textarea{
+				width: 95%;
+			}			
+			paper-toolbar{
+				--paper-toolbar-height:40px;
+			}
+		</style>
+		<paper-toolbar>
+			<span  class="title">GRUPOS Nº {{datain._id}}</span>
+			<paper-icon-button icon="clear" dialog-dismiss></paper-icon-button>
+		</paper-toolbar>		
+		<div id="formGroup">
+			<iron-ajax id="ajaxin" handle-as="json" content-type='application/json' on-response="_iniResponse" method="GET"></iron-ajax>			
+			<iron-ajax id="ajaxout" handle-as="json" content-type='application/json' on-response="_ajaxResponse" on-error="_ajaxResponseError"></iron-ajax>
+				<form is="iron-form" id="form">	
+		    	
+					<div class="s12 m12">
+						<paper-textarea label="Titulo" name="title" value="{{data.title}}"></paper-textarea>
+					</div>
+					<div class="s12 m6">
+					<span>Descripción</span>
+						<iron-autogrow-textarea rows="10" name="description"  value="{{data.description}}" placeholder="Descripción"></iron-autogrow-textarea>
+					</div>
+					<div class="s12 m6">
+							<paper-toolbar>
+							<paper-icon-button icon="add-circle-outline" title="nuevo Tarea "class="btnadd" on-click="_showFormAction"></paper-icon-button>
+								<span  class="title">Tareas</span>
+							</paper-toolbar>
+						<div id="tareas">
+							<template is="dom-repeat" items="{{actions}}">
+								<paper-card class="cardtarea" draggable="true">
+									<paper-icon-button icon="create" data="actions" id_element$="{{item.id}}"  horizontal-align="right"  on-click="_showFormAction"></paper-icon-button>
+									<span>{{item.description}}</span>
+									<span class="date">{{item.date_created}}</span>
+					  				<my-paper-progress timereal="{{item.timereal}}" timeproyected="{{item.timeproyected}}"></my-paper-progress>	
+								</paper-card>
+							</template>
+						</div> 
+					</div>	       
+				</form>
+				<div>
+			       <paper-icon-button icon="delete" style="float:left" on-tap="_delItem"></paper-icon-button>
+
+			       <paper-fab noink icon="check" style="float:right" title="Guardar Cambios"  dialog-confirm on-tap="_confirmForm"></paper-fab>
+			    </div>   
+		</div>
+			<paper-dialog id="dial_actions">
+					<my-form-actions datain="{{formactiondatain}}" dataout="{{formactiondataout}}"></my-form-actions>
+			</paper-dialog>
+			<paper-dialog id="dial_alert">
+					<my-modal-alert datain="{{modaldatain}}" dataout="{{modaldataout}}"></my-modal-alert>
+			</paper-dialog>			
+
+	</template>	    
+	<script>
+	var myArray = new Array();
+		(function () {
+			Polymer({
+				is: 'my-form-groups',
+				properties: {
+				  // datos de entrada
+				  datain:{
+				  	type: Object,
+				  	observer:"_initElement"
+				  },
+				  dataout:{
+				  	type: Object,
+				  	notify:true,
+				  },				  	
+		          // datos del formulario modal
+
+		          interval:Number,
+		          id_action:{
+		            type:Number,
+		            value:[]
+		          },
+		          comment:{
+		            type:String,
+		            value:"Nueva Cita"
+		          },
+		          idapp:Number,
+		          modaldataout:{
+		          	type:String,
+		          	observer:"_delItemConfirm"
+		          },
+		          modaldatain:Object
+ 				},
+ 				_initElement: function(){
+ 					console.log("en form GRUPOS"+this.datain._id)
+ 					console.log(this.datain)
+ 					if(this.datain._id){
+ 						console.log("pide")
+						this.$.ajaxin.url="/json/groups/"+this.datain._id;
+						this.$.ajaxin.generateRequest();
+ 					}
+					this.data=this.datain;
+					this.actions=[];
+				
+
+
+ 				},
+ 				_iniResponse: function(e){
+					    console.log("llega respuesta"); 
+ 						var data=e.target.lastResponse;
+						this.actions=data.actions ? data.actions : [];
+						this.data=data;
+					    console.log("preparados datos form");
+					    console.log(this.data)
+
+ 				},
+ 				_addAccion:function(){
+ 					if(this.id_action_sel){
+ 						i=this.id_action_sel-1
+	 					obj={'name': this.actions[i].title,'id':i,}
+	 					this.push("id_action",obj);
+ 					}
+ 				},
+				_showFormAction:function(e){
+
+					this.$.dial_actions.toggle();
+
+				},
+
+ 				_delItem:function(){
+ 					console.log("borrar:"+this.datain._id)
+ 					var data={}
+ 					data.title="Borrar el Groupo "+this.datain._id;
+					data.menssaje="Se va ha eliminar el Groupo completamente <br> ¿Desea Continuar? ";
+					this.modaldataout="";
+					this.modaldatain=data;
+					this.$.dial_alert.toggle();	
+ 				},
+ 				_delItemConfirm:function(){
+ 					if(this.modaldataout=="OK"){
+ 						console.log("llega _delItemConfirm")
+
+ 						this._delAjaxData(this.datain._id);
+ 					}
+ 				},
+ 				_confirmForm:function(){
+
+ 					if(this.datain._id){
+ 						method="PUT"; 
+ 					}else{
+ 						method="POST";	
+
+ 					}
+ 					this._addAjaxData(method)
+ 				}, 				
+ 				_createDataOut:function(){
+ 					return this.data;
+ 				},
+				_addAjaxData:function(method){
+					this.$.ajaxout.method=method;
+					this.$.ajaxout.url="/json/groups";
+					this.$.ajaxout.body = JSON.stringify(this._createDataOut());
+					this.$.ajaxout.generateRequest();
+					console.log("datos enviado desde form:"+method);
+					console.log(this._createDataOut())					
+				},
+				_delAjaxData:function(id_element){
+					this.$.ajaxout.method="DELETE";
+					this.$.ajaxout.url="/json/groups/"+id_element;
+					this.$.ajaxout.generateRequest();
+				},
+				_ajaxResponse: function(request) {
+					var obj={};
+					var data=this.$.ajaxout.lastResponse;
+					console.log("datos ajax que llega")
+					console.log(data);
+					if(data['status']){
+						obj.data=this._createDataOut();	
+						obj.method=data['method'];
+						if(data['method']=="POST"){
+							console.log("form POST")
+							obj.data._id=data['id'];
+						}	
+						if(data['method']=="PUT"){
+							console.log("form PUT")							
+							obj.pos=this.datain.idapp;
+						}
+						if(data['method']=="DELETE"){
+							console.log("form DELETE")							
+							obj.pos=this.datain.idapp;
+						}	
+							console.log("obj envio al Home")	
+							console.log(obj);					
+
+						this.dataout=obj;							
+					}else{
+						console.log("hay un error")
+						this.modaldatain="ERROR: "+data['error'];
+						this.$.dial_alert.open();	
+					}
+				},
+				_ajaxResponseError: function(request) {
+					data=this.$.ajaxout.lastError;
+					console.log("_ajaxResponseError")
+					console.log(data);
+					this.modaldatain="ERROR: ";
+					this.$.dial_actions.open();							
+				}
+		
+
+
+			});
+		})();
+	</script>
+</dom-module>	    

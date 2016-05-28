@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="my-paper-input-increment">
+	<template>
+		<style>
+			:host {
+				display: block;
+			    width: 400px;
+			    height: 100%;
+			    padding: 0!important;
+			    margin: 0!important;
+			}
+		</style>
+			          <paper-input label="Hora inicio"  name="time_start" value="{{time_start}}">
+									<paper-icon-button prefix on-click="_avanStartTime" icon="chevron-left" alt="+ {{interval}}" title="+ {{interval}}"></paper-icon-button>
+									<paper-icon-button suffix on-click="_backStartTime" icon="chevron-right" alt="- {{interval}}" title="- {{interval}}"></paper-icon-button>
+
+			          </paper-input>
+
+	</template>	    
+	<script>
+	var myArray = new Array();
+		(function () {
+			Polymer({
+				is: 'my-paper-input-increment',
+				properties: {
+				  // datos de entrada
+				  timevalue:{
+				  	type: Object,
+				  	observer:"_initElement"
+				  },
+ 				},
+				_avanStartTime:function(){
+					console.log("fecha+"+this.time_start)
+					this.time_start=this._changeTime(this.time_start,-1);
+				},
+				_backStartTime:function(){
+					this.time_start=this._changeTime(this.time_start,1);
+				},
+				_avanEndTime:function(){
+					this.time_end=this._changeTime(this.time_end,-1);
+				},
+				_backEndTime:function(){
+					this.time_end=this._changeTime(this.time_end,1);
+				},
+				_changeTime:function(time, v){
+					t=new Date("2000-01-01 "+time+":00")
+					t.setMinutes(t.getMinutes()+(v*this.interval));
+					return t.getHours()+":"+this._addZeroOneCaracter(t.getMinutes());
+				},
+			});
+		})();
+	</script>
+</dom-module>	    

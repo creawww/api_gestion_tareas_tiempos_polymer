@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>  
+
+    # Turn on 
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-l
+
+    #RewriteCond %{REQUEST_URI} !^/assets/
+    RewriteCond $1 !^(favicon\.ico|favicon\.png|media|crearBD\.php|mongo*\.php|crossdomain\.xml|.*\json)
+
+    RewriteRule ^(.+)$ index.php?go=$1 [QSA,L]
+
+   # Generic 404 for anyplace on the site  
+   # ...  
+
+</IfModule>  
