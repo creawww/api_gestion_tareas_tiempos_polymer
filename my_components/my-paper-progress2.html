@@ -23,12 +23,25 @@
 			--paper-progress-container-color: #888;
 			--paper-progress-height:10px;
 		}
+		paper-progress.green{
+			 --paper-progress-active-color: green;
+		}		
+		paper-progress.red{
+			 --paper-progress-active-color: red;
+		}
+		paper-progress.blue{
+			 --paper-progress-active-color: blue;
+		}
 		</style>
-			<div class="progreso">
-				<span>{{porcen}}% - {{timereal}} / {{timeproyected}} </span>
-				<paper-progress  value="{{porcen}}" max="100"></paper-progress>
+			<div id="progreso">
+				<span>{{porcen}}% - {{timeproyected}} / {{timereal}}</span>
+				<paper-progress id="pp1"  value="{{porcen}}" max="100"></paper-progress>	
 			</div>
-	</template>
+			<div id="end">
+				<span>{{porcen}}% - {{timeproyected}} / {{timereal}}</span>
+				<paper-progress  value="{{porcen}}" max="100"></paper-progress>	
+			</div>			
+	</template>	    
 	<script>
 	var myArray = new Array();
 		(function () {
@@ -44,21 +57,27 @@
 				  timeproyected:{
 				  	type: String,
 				  	value: 30,
-				  	observer:"_calData"
+				  	observer:"_calData"				  	
 
 				  },
 				  porcen:{
 				  	type: Number,
 
-				  },
+				  },				  				  
  				},
  				_calData:function(){
  					if(this.timeproyected && this.timereal>0)
  					this.porcen=Math.round((eval(this.timereal/this.timeproyected))*100);
-					//console.log(this.porcen+"% "+this.timeproyected+"-->"+this.timereal)
+
+ 					if(this.porcen>50){
+ 						this.$.pp1.classList.add('red')
+ 					}else{
+
+ 					}
+					//console.log(this.porcen+"% "+this.timeproyected+"-->"+this.timereal) 			
  				}
 
 			});
 		})();
 	</script>
-</dom-module>
+</dom-module>	    

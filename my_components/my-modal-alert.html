@@ -5,17 +5,24 @@
 			:host {
 				display: block;
 			    width: 400px;
-			    height: 300px;
+			    height: 100%;
+			}
+			.headermodal{
+				width: 100%
+			}
+			.headermodal paper-icon-butoon{
+				float: right;
 			}
 
 		</style>
-	        <div>
+	        <div class"headermodal">
+				<paper-icon-button icon="clear"  dialog-dismiss></paper-icon-button>	        
 				<span class="title">{{datain.title}}</span>
-				<paper-icon-button icon="clear"  dialog-dismiss></paper-icon-button>
+
 			</div>
 		
 	    <div id="formdiary">
-				<h2>{{datain.menssaje}}</p>
+				<p>{{datain.menssaje}}</o>
 		<div class="buttons">
 			 <paper-button dialog-confirm  on-tap="_confirmAlert">Aceptar</paper-button>
 		 </div>

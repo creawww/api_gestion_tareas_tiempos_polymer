@@ -26,28 +26,57 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   /* Application theme */
 
   :root {
-    --primary-text-color: var(--paper-grey-900);
-    --primary-background-color: #ffffff;
-    --secondary-text-color: #737373;
+    --primary-text-color: var(--paper-grey-800);
+    --primary-background-color: var(--paper-grey-100);
+    --secondary-text-color:green;
     --disabled-text-color: #9b9b9b;
     --divider-color: #dbdbdb;
-    --primary-color: var(--paper-indigo-500);
-    --light-primary-color: var(--paper-indigo-100);
-    --dark-primary-color: var(--paper-indigo-700);
-    --accent-color: var(--paper-pink-a200);
-    --light-accent-color: var(--paper-pink-a100);
-    --dark-accent-color: var(--paper-pink-a400);
+    --primary-color: var(--paper-orange-800);
+    --light-primary-color: var(--paper-orange-100);
+    --dark-primary-color: var(--paper-orange-700);
+    --accent-color: var(--primary-color);
+    --light-accent-color: var(--paper-orange-a100);
+    --dark-accent-color: var(--paper-orange-800);
 
     /* Components */
 
     /* paper-drawer-panel */
-    --drawer-menu-color: #ffffff;
+    --drawer-menu-color:   var(--primary-color);
     --drawer-border-color: 1px solid #ccc;
     --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
 
     /* paper-menu */
-    --paper-menu-background-color: #fff;
-    --menu-link-color: #111111;
+    --paper-menu-background-color:  #fff;
+    --paper-menu-icons-color: #fff;    
+    --menu-link-color: var( --primary-color );
+  
+/*Mi añadidos--------------------------------------------------------------------------------------------*/
+
+
+
+    --paper-toolbar-background: #fff;
+    --paper-toolbar-color: var(--paper-grey-900);
+
+    --paper-card-background-color: var(--paper-grey-300);
+
+    --paper-input-container-color: var( --primary-text-color);
+    --paper-input-container-focus-color:  var(--primary-color);
+    --paper-input-container-invalid-color: #ff6e40;
+    --paper-input-container-input-color:var(--secondary-text);
+
+    --paper-button-color: #FFF;    
+    --paper-icon-button-disabled-text: #afb1b9;
+    --paper-icon-button-text: #000;
+    --paper-icon-button-color: #000;
+    --paper-icon-button--background-color: #ccc;   
+/*-----------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+
+
   }
 
   /* General styles */
@@ -55,6 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   body {
     @apply(--layout-fullbleed);
     @apply(--layout-vertical);
+    background:  var(--paper-grey-200);
   }
 
   .space {
@@ -62,7 +92,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
 
   #drawerToolbar {
-    color: var(--secondary-text-color);
+    color: #fff;
     background-color: var(--drawer-menu-color);
     border-bottom: var(--drawer-toolbar-border-color);
   }
@@ -86,8 +116,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
 
   paper-menu iron-icon {
-    margin-right: 33px;
-    opacity: 0.54;
+    border: 2px solid;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    margin: auto;
+    padding:5px;
   }
 
   paper-menu a {
@@ -95,16 +129,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     @apply(--layout-center);
 
     text-decoration: none;
-    color: var(--menu-link-color);
+    color: var(--primary-color);
     font-family: 'Roboto', 'Noto', sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 400;
     line-height: 24px;
     min-height: 48px;
-    padding: 0 16px;
+    padding: 20px 0px;
   }
+/*Mi añadidos--------------------------------------------------------------------------------------------*/
+ paper-menu a {
+  color:;
+ }
+
+
+
+
+
+
+/*---------------------------------------------------------------------------------------------------*/
 
   #mainToolbar.tall .app-name {
     font-size: 40px;
@@ -174,6 +219,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   @media (max-width: 600px) {
 
     #drawer .paper-toolbar {
+    width: 50px;      
       margin-left: 16px;
     }
 

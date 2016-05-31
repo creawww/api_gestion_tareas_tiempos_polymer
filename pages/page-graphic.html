@@ -4,12 +4,16 @@
 	<template>
 			 <style is="custom-style">
        *{
-         box-sizing: border-box;       
+         box-sizing: border-box;
        }
 			:host {
 				display: block;
 
 			}
+      #content{
+          margin-top: 20px;
+      }
+
 				#hoursDay{
 					width: 90%;
           margin: auto;
@@ -17,33 +21,24 @@
         #actions {
           padding:2% 0 2% 2%;
           width: 46%;
-          float: left;             
+          float: left;
          }
         #actions>*{
-           width: 100%;  
+           width: 100%;
          }
         #group {
           padding:2% 2% 2% 0;
-          width: 46%;  
+          width: 46%;
           float: right;
          }
         #group>*{
-           width: 100%;  
+           width: 100%;
          }
-        #resultado{
-          margin:10px;
-          padding: 5px;
-          width: 700px;
-          height: 50px;
-          background: #3F51B5;
-          color: #fff;
-        }
-
         #fechas{
-          margin:10px;          
+          margin:10px;
           width: 300px;
           float: right;
-          border: 2px solid #3F51B5;
+          border: 2px solid #ccc;
         }
 
         #fechas>vaadin-date-picker{
@@ -54,40 +49,47 @@
         #actions_chart {
           float:left;
           width: 50%;
-        } 
+        }
         #group_chart {
           width: 50%;
-        }     
+        }
         google-chart{
           width: 100%
-        } 
+        }
+        #nodata{
+          display: none;
+        }
+        #nodata h3{
+          text-align: center;
+          margin-top:20px;
+        }
 		</style>
-        <iron-ajax id="ajaxdiary" url="/json/resultdata.json" method="GET" on-response="_ajaxResponseDiary"></iron-ajax> 
+        <iron-ajax id="ajaxdiary" url="/json/resultdata.json" method="GET" on-response="_ajaxResponseDiary"></iron-ajax>
 
 			<paper-toolbar id="mainToolbar">
 				<paper-icon-button icon="menu" on-click="toggleMenu"></paper-icon-button>
-				<span class="title">GESTION DE AGENDA Y TIEMPOS </span>
-				</div>
-			</paper-toolbar>
-
-	    <div id="content">
-
-           <div id="fechas">
+				<span class="title">RESULTADOS. Horas : {{timetotal}} h - Media: {{timeavg}} h/dia </span>
+            <paper-icon-button icon="arrow-back" on-click="_moveWeek1"></paper-icon-button>
+            <paper-icon-button icon="date-range"></paper-icon-button>
+            <paper-icon-button icon="arrow-forward" on-click="_moveWeek"></paper-icon-button>
+            <div id="fechas">
             <vaadin-date-picker id="mypicker1" name="date_deliver" label="Fecha Inicial" value="{{date_start}}"></vaadin-date-picker>
               <vaadin-date-picker id="mypicker2" name="date_deliver" label="Fecha Final" value="{{date_end}}"></vaadin-date-picker>
            </div>
+				</div>
+			</paper-toolbar>
+      <div id="nodata">
+        <h3>No hay datos en estas fechas</h3>
+      </div>
+	    <div id="content">
 
-           <div id="resultado">
-             <h3>Horas totales  de horas computadas : 42 h con una media de 7.5 h/dia</h3>
-           </div>           
-      
+
          <div id="graphicday">
           <google-chart id="hoursDay"
             type="area"
             options='{"title": "Horas al dia de Trabajo"}'
-            cols='[{"label": "Dia", "type": "string"},{"label": "horas", "type": "number"}]'
-
-          </google-chart>           
+            cols='[{"label": "Dia", "type": "string"},{"label": "horas", "type": "number"}]'>
+          </google-chart>
 
          </div>
          <div id="actions" class="col50">
@@ -97,9 +99,9 @@
                     type="pie"
                     cols='[{"label": "tarea", "type": "string"},{"label": "horas", "type": "number"}]'>
                   </google-chart>
-               </div>  
+               </div>
                <google-chart
-                  id="tableactions"               
+                  id="tableactions"
                   type="table"
                   options='{"title": "Tarea", "page": "disable"}'>
                   </google-chart>
@@ -113,16 +115,16 @@
                     options='{"title": "% por Grupos"}'
                     cols='[{"label": "tarea", "type": "string"},{"label": "horas", "type": "number"}]'>
                   </google-chart>
-               </div>                   
+               </div>
                <google-chart
-                  id="tablegroups"               
+                  id="tablegroups"
                   type="table"
                   options='{"title": "Grupos", "page": "disable"}'
                   </google-chart>
 
               </div>
- 
-				
+
+
 	</template>
 
 	<script>
@@ -141,8 +143,14 @@
             date_end:{
               type:String,
               observer: "_callAjax"
-            }             
+            },
+            timetotal:Number,
+            timeavg:Number,
+            apppage:{
+              observer:"_initElement"
+            }
 				},
+
 				ready:function(){
             this.$.mypicker1.i18n={
                 today: 'hoy',
@@ -158,93 +166,130 @@
                   return monthName + ' ' + fullYear;
                 }
             };
-            this.$.mypicker2.i18n=  this.$.mypicker1.i18n 
-					
-          this._initElement();
+            this.$.mypicker2.i18n=  this.$.mypicker1.i18n
         },
         _initElement:function(){
-          var d=new Date();
-          var dayweek=d.getDay();
-          var dStart= new Date(d.setDate(d.getDate()-(7+parseInt(dayweek))));
-          console.log(dStart)
-          var dEnd= new Date(d.setDate(d.getDate()+7));
-          this.date_start=dStart.getFullYear()+"-"+this._addZeroOneCaracter(dStart.getMonth()+1)+"-"+this._addZeroOneCaracter(dStart.getDate());
-          this.date_end=dEnd.getFullYear()+"-"+this._addZeroOneCaracter(dEnd.getMonth()+1)+"-"+this._addZeroOneCaracter(dEnd.getDate());
-
-          this._callAjax();
+          if(this.apppage=="graphic"){
+              var d=new Date();
+              var dayweek=d.getDay();
+              var dStart= new Date(d.setDate(d.getDate()-(6+parseInt(dayweek))));
+              var dEnd= new Date(d.setDate(d.getDate()+6));
+              this.date_start=dStart.getFullYear()+"-"+this._addZeroOneCaracter(dStart.getMonth()+1)+"-"+this._addZeroOneCaracter(dStart.getDate());
+              this.date_end=dEnd.getFullYear()+"-"+this._addZeroOneCaracter(dEnd.getMonth()+1)+"-"+this._addZeroOneCaracter(dEnd.getDate());
+              this._callAjax();
+          }
         },
+
+
+
         _callAjax:function(){
 
-          var query="?dateini="+this.date_start+" 00:00&dateend="+this.date_end+" 24:00"
-          this.$.ajaxdiary.url="/json/resultdata/"+query;
-          console.log("query:"+query)
-          this.$.ajaxdiary.generateRequest();
+          if(this.date_start){
+            var query="?dateini="+this.date_start+" 00:00&dateend="+this.date_end+" 24:00"
+            this.$.ajaxdiary.url="/json/resultdata/"+query;
+            this.$.ajaxdiary.generateRequest();
+          }
+
+        },
+        _moveWeek:function(){
+          this._changeDate(-7);
+
+        },
+        _moveWeek1:function(){
+          this._changeDate(7);
+        },
+        _changeDate: function(day){
+          d=new Date(this.date_start);
+          var dStart= new Date(d.setDate(d.getDate()-day));
+          var dEnd= new Date(d.setDate(d.getDate()+6));
+          this.date_start=dStart.getFullYear()+"-"+this._addZeroOneCaracter(dStart.getMonth()+1)+"-"+this._addZeroOneCaracter(dStart.getDate());
+          this.date_end=dEnd.getFullYear()+"-"+this._addZeroOneCaracter(dEnd.getMonth()+1)+"-"+this._addZeroOneCaracter(dEnd.getDate());
+          this._callAjax()
+
+
         },
         _addZeroOneCaracter:function(dmunber){
             return dmunber < 10 ? '0' + dmunber : '' + dmunber;
-        },        
+        },
         _ajaxResponseDiary: function(e){
-          
-          var days_week=[" D"," L"," M"," M"," J"," V"," S"];
-          var data=e.target.lastResponse;
-          console.log("datos de graph")
-          console.log(data)
+          if(e.target.lastResponse){
+                this.$.nodata.style.display="none"
+                this.$.content.style.display="block"
 
-          var ddate={};
-          var daction={};
-          var dgroup={};          
-          for (var key in data) {
-            time=data[key].time ? Number(data[key].time):0;
-            ddate[data[key].date]=ddate[data[key].date]? ddate[data[key].date]:0;
-            ddate[data[key].date]=ddate[data[key].date]+time;
+              var days_week=[" D"," L"," M"," M"," J"," V"," S"];
+              var data=e.target.lastResponse;
 
-            daction[data[key].name_action]=daction[data[key].name_action]? daction[data[key].name_action]:0;
-            daction[data[key].name_action]=daction[data[key].name_action]+time;
-            dgroup[data[key].name_group]=dgroup[data[key].name_group]? dgroup[data[key].name_group]:0;
-            dgroup[data[key].name_group]=dgroup[data[key].name_group]+time;
+              var ddate={};
+              var daction={};
+              var dgroup={};
+              this.timetotal=0;
+              //var days=Math.ceil((new Date(this.date_start).getTime()-new Date(this.date_end).getTime())/(1000*60*60*24))
+              var days=0;
+							var adate="";
+              for (var key in data) {
+
+                time=data[key].time ? Number(data[key].time):0;
+                ddate[data[key].date]=ddate[data[key].date]? ddate[data[key].date]:0;
+                ddate[data[key].date]=ddate[data[key].date]+time;
+
+                if(adate!=data[key].date){
+                  adate=data[key].date;
+                  days++;
+                }
+                this.timetotal+=time;
+                daction[data[key].name_action]=daction[data[key].name_action]? daction[data[key].name_action]:0;
+                daction[data[key].name_action]=daction[data[key].name_action]+time;
+                dgroup[data[key].name_group]=dgroup[data[key].name_group]? dgroup[data[key].name_group]:0;
+                dgroup[data[key].name_group]=dgroup[data[key].name_group]+time;
+              }
+              this.timeavg=Math.round((this.timetotal/days)*10)/10;
+              // formamos los datos para la grafica de fechas
+              var datadate=[];
+              for (var key in ddate) {
+                name = key.split('-')[2]+days_week[new Date(key).getDay()];
+                datadate.push([ name , ddate[key] ])
+              }
+              this.$.hoursDay.rows=datadate;
+
+             // formamos los datos para la grafica de tareas
+              var dataaction=[];
+              for (var key in daction) {
+                name = key;
+                dataaction.push([ name , daction[key] ])
+              }
+              this.$.chartactions.rows=dataaction;
+
+              this.$.chartactions.options={title: "% por Tarea", width: '100%'};
+
+              //tabla de acciones
+              var dataaction1 = dataaction.slice(0);
+              dataaction1.splice(0, 0, ["Descripcion", "Horas"]);
+
+              this.$.tableactions.data=dataaction1;
+              this.$.tableactions.options={width: '100%'};
+
+             // formamos los datos para la grafica de grupos
+              var datagroup=[];
+              for (var key in dgroup) {
+                name = key;
+                datagroup.push([ name , dgroup[key] ])
+              }
+              this.$.chartgroups.rows=datagroup;
+
+              this.$.chartgroups.options={title: "% por Grupos", width: '100%'};
+              //tabla de acciones
+              var datagroup1 = datagroup.slice(0);
+              datagroup1.splice(0, 0, ["Descripcion", "Horas"]);
+
+              this.$.tablegroups.data=datagroup1;
+              this.$.tablegroups.options={width: '100%'};
+            }else{
+                this.$.nodata.style.display="block"
+                this.$.content.style.display="none"
+               this.timeavg="";
+               this.timetotal="";
+            }
           }
-          // formamos los datos para la grafica de fechas
-          var datadate=[];
-          for (var key in ddate) {
-            name = key.split('-')[2]+days_week[new Date(key).getDay()];
-            datadate.push([ name , ddate[key] ])
-          }
-          this.$.hoursDay.rows=datadate;
-
-         // formamos los datos para la grafica de tareas
-          var dataaction=[];
-          for (var key in daction) {
-            name = key;
-            dataaction.push([ name , daction[key] ])
-          }
-          this.$.chartactions.rows=dataaction;  
-
-          this.$.chartactions.options={title: "% por Tarea", width: '100%'};
-
-          //tabla de acciones
-          var dataaction1 = dataaction.slice(0);
-          dataaction1.splice(0, 0, ["Descripcion", "Horas"]); 
-       
-          this.$.tableactions.data=dataaction1;
-          this.$.tableactions.options={width: '100%'};
-         
-         // formamos los datos para la grafica de grupos
-          var datagroup=[];
-          for (var key in dgroup) {
-            name = key;
-            datagroup.push([ name , dgroup[key] ])
-          }
-          this.$.chartgroups.rows=datagroup;  
-
-          this.$.chartgroups.options={title: "% por Grupos", width: '100%'};
-          //tabla de acciones
-          var datagroup1 = datagroup.slice(0);
-          datagroup1.splice(0, 0, ["Descripcion", "Horas"]); 
-       
-          this.$.tablegroups.data=datagroup1;
-          this.$.tablegroups.options={width: '100%'};
-        },        
-
 			});
 		})();
 	</script>

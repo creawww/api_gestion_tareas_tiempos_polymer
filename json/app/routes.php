@@ -23,15 +23,8 @@ $routes = array(
 
 '/json/resultdata' => array('GET'=>array('controller' =>'MongoController', 'action' =>'getResultData')),
 
-'/json/prueba' => array('GET'=>array('controller' =>'MongoController', 'action' =>'prueba')),
+'/json/prueba' => array('GET'=>array('controller' =>'MongoController', 'action' =>'prueba'))
 
-'/json/Groupmysql' => array('GET'=>array('controller' =>'GroupController', 'action' =>'listGroups')),
-
-'/json/Groupmysql' => array('GET'=>array('controller' =>'GroupController', 'action' =>'Group'),
-						'POST'=>array('controller' =>'GroupController', 'action' =>'Group'),
-						'PUT'=>array('controller' =>'GroupController', 'action' =>'put'),	
-						'DELETE'=>array('controller' =>'GroupController', 'action' =>'delete'),
-				),
 );
 
 

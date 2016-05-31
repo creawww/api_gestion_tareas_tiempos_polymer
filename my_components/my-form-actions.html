@@ -8,110 +8,90 @@
 			    height: 100%;
 			    padding: 0!important;
 			    margin: 0!important;
-			    background-color:#C5CAE9
 
 			}
 			#formactions{
 				padding: 10px;
 			}
+			#agenda{
+				width: 100%;
+			}
+			#agenda div{
+				border-top: 1px solid #fff;
+				float: left;
+				font-size: 12px;
+				box-sizing: border-box;
+				padding: 2px;
 
-		paper-button.custom {
-		    --paper-button-ink-color: var(--paper-pink-a200);
-		    --paper-button-flat-keyboard-focus: {
-		      background-color: var(--paper-pink-a200);
-		      color: white !important;
-		    };
-		    --paper-button-raised-keyboard-focus: {
-		      background-color: var(--paper-pink-a200) !important;
-		      color: white !important;
-		    };
-		  }
-		  paper-button.custom:hover {
-		    background-color: var(--paper-indigo-100);
-		  }
-		  paper-button.indigo {
-		    background-color: var(--paper-indigo-500);
-		    color: white;
-		    --paper-button-raised-keyboard-focus: {
-		      background-color: var(--paper-pink-a200) !important;
-		      color: white !important;
-		    };
-		  }
-		#agenda{
+			}
+			#agenda .f1{
+				width: 24%;
+			}
+			#agenda .f2{
+				width: 65%;
+			}
+			#agenda .f3{
+				width: 11%;
+				text-align: right;
+			}
+			#subtareas{
+				width: 100%;
+			}
+			#subtareas div{
+				border-top: 1px solid #fff;
+				float: left;
+				font-size: 12px;
+				box-sizing: border-box;
+				padding: 2px;
+
+			}
+			#subtareas .f1{
+				width: 80%;
+			}
+			#subtareas .f2{
+				text-align: right;
+				width: 10%;
+			}
+			#subtareas .f3{
+				width: 5%;
+			}
+			#subtareas span{
+				float: right;
+				color:#999;
+				font-size: .7em;
+			}
+			#subtareas .deltarea{
+				text-align: right;
+				color:#000;
+				font-size: 1.3em;
+				cursor: pointer;
+				margin-top: -5px;
+			}
+			#subtareas paper-checkbox{
+				display: inline;
+				width: 80%
+			}
+			#subtareas>.subheader{
+				width: 100%;
+				display: inline-block;
+				background: var( --paper-toolbar-background);
+			    box-sizing: border-box;
+			}
+			paper-icon-button.click {
+			    background-color: var(--accent-color);
+			    color: white;
+			    border-radius: 3px;
+			    padding: 2px;
+			    width: 57px;
+			    height: 25px;
+			    box-sizing: border-box;
+			}
+			input{
+				width: 100%;
+				margin: 1%;
+			}
 
 
-		}
-		#agenda div{
-			border-top: 1px solid #fff;
-			float: left;
-			font-size: 12px;
-			box-sizing: border-box;
-			padding: 2px;			
-		}
-		#agenda .f1{
-			width: 24%;
-		}
-		#agenda .f2{
-			width: 65%;
-		}				
-		#agenda .f3{
-			width: 11%;
-			text-align: right;
-		}	
-		#subtareas div{
-			border-top: 1px solid #fff;
-			float: left;
-			font-size: 12px;
-			box-sizing: border-box;
-			padding: 2px;			
-		}
-		#subtareas .f1{
-			width: 80%;
-		}
-		#subtareas .f2{
-			text-align: right;
-			width: 10%;
-		}				
-		#subtareas .f3{
-			width: 5%;
-		}	
-		#subtareas span{
-			float: right;
-			color:#999;
-			font-size: .7em;
-		}
-		#subtareas .deltarea{
-			text-align: right;
-			color:#000;
-			font-size: 1.3em;
-			cursor: pointer;
-			margin-top: -5px;
-		}		
-		#subtareas paper-checkbox{
-			display: inline;
-			width: 80%
-		}
-		#subtareas>.subheader{
-			width: 100%;
-			display: inline-block;	
-			background: #3f51b5;
-			color:#fff;
-		}
-		  paper-icon-button.blue {
-		    --paper-icon-button-ink-color: var(--paper-orange-500);
-		    background-color: var(--paper-light-blue-500);
-		    color: white;
-		    border-radius: 3px;
-		    padding: 2px;
-		    width: 60px;
-		    height: 25px;
-		  }
-		input{
-			width: 100%;
-			margin: 1%;
-		}
-		
-		
 			#form{
 			    display: inline-block;
 		        vertical-align: top;
@@ -121,7 +101,11 @@
 			}
 			#form div{
  				box-sizing: border-box;
+ 				display: inline-block;
+ 				padding: 0;
+ 				padding: 0 1% 0 1%;
 			}
+			#form div:parent {padding: 0!important; }
 
 			#form .m12{
  				width: 100%;
@@ -139,103 +123,109 @@
  				width: calc( 100% / 3);
 
 
-			}	
+			}
 			#form .m3{
- 				width: calc( 100% / 4);
+ 				width: calc( ( 100% / 4) - 3px );
 
-			}	
+			}
 			#accept{
 				text-align: right;
 				float:right;
 
-			}			
+			}
 			paper-toolbar{
 				--paper-toolbar-height:40px;
+			}
+			paper-input.textcenter{
+					text-align: center;
+			}
+			iron-autogrow-textarea{
+ 				box-sizing: border-box;
+ 				width: 100%;
 			}
 			</style>
 	        <paper-toolbar>
 				<span class="title">Tarea </span>
-				<paper-checkbox>Finalizada</paper-checkbox>
+				<paper-checkbox id="actionend">Finalizada</paper-checkbox>
 				<paper-icon-button  dialog-dismiss icon="clear"></paper-icon-button>
 			</paper-toolbar>
-			<iron-ajax id="ajaxin" handle-as="json" content-type='application/json' on-response="_iniResponse" method="GET"></iron-ajax>			
+			<iron-ajax id="ajaxin" handle-as="json" content-type='application/json' on-response="_iniResponse" method="GET"></iron-ajax>
 			<iron-ajax id="ajaxout" handle-as="json" content-type='application/json' on-response="_ajaxResponse" on-error="_ajaxResponseError"></iron-ajax>
 
 	    <div id="formactions">
-
-
-	        <form is="iron-form" id="form">	    
+	        <form is="iron-form" id="form">
 	    	<div class="m9">
-	    		<paper-input  name="description" label="Descripcion" value="{{data.description}}" placeholder="Descripcion"></paper-input>
+	    		<paper-input  name="Titulo" label="Descripcion" value="{{data.title}}" placeholder="Titulo"></paper-input>
 	        </div>
-				    <div class="m3" style="text-align: right">
-				    	<p>{{data.date_created}}</p>	
 
+		    <div class="m3" style="text-align: right">
+		    	<p>{{data.date_end}}<br>{{data.date_created}}</p>
+
+		    </div>
+
+			<div class="m6">
+				<div class="m12">
+					<span>Descripción</span>
+					<iron-autogrow-textarea rows="6" name="description"  value="{{data.description}}" placeholder="Descripción"></iron-autogrow-textarea>
+				</div>
+			    <div id="subtareas">
+				    <div class="subheader m12">
+					    <paper-icon-button icon="subject"></paper-icon-button>
+					    <input is="iron-input" id="subdescription"  placeholder="Nueva Subtarea" style="width:60%">
+					    <input is="iron-input" id="subtime" placeholder="horas" style="width:10%">
+					    <paper-icon-button icon="subdirectory-arrow-left" class="click" on-click="_addSubAccion"></paper-icon-button>
 				    </div>
-				    <div class="m3">
-				    <vaadin-date-picker id="mypicker" name="date_deliver" label="Fecha prevista" value="{{data.date_deliver}}"></vaadin-date-picker>
-
-				    </div>
-				    <div class="m3">
-				    <paper-input  name="time_proyected" label="Tiempo Previsto" value="{{data.time_proyected}}" placeholder="Tiempo Previsto"></paper-input>
-				    </div>
-
-				    <div class="m6">
-				    	<my-paper-progress timereal="{{timereal}}" timeproyected="{{data.time_proyected}}"></my-paper-progress>	
-					</div>
-	        <div class="m6">
-				    <div class="m12">
-						<iron-ajax  url="/json/groups" last-response="{{groups}}" auto></iron-ajax>
-						<vaadin-combo-box name="id_proyect" item-label-path="title" item-value-path="_id"  label="Grupo"  items="{{groups}}" value="{{data.id_group}}">
-						</vaadin-combo-box>
-					</div>
-				    <div >
-					    <div id="subtareas">
-						    <div class="subheader">
-						    <paper-icon-button icon="subject"></paper-icon-button>
-						    <input is="iron-input" id="subdescription"  placeholder="Nueva Subtarea" style="width:60%">	
-						    <input is="iron-input" id="subtime" placeholder="horas" style="width:10%">
-						    <paper-icon-button icon="subdirectory-arrow-left" class="blue" on-click="_addSubAccion"></paper-icon-button>
-	    	
-						    </div>				    
-
-								<template is="dom-repeat" items="{{subactions}}" as="subt">
-									<div class="f1">
-										<paper-checkbox>{{subt.description}}</paper-checkbox>
-										<span class="date">{{subt.date}}</span>	
-									</div>
-									<div class="f2">{{subt.time}} h</div>									
-									<div class="f3"><span class="deltarea" iditem$="{{index}}" on-click="_delSubAction">x</span></div>
-								</template>
-		        		</div>				    	
-				    </div> 	
-			   </div> 						
-	        <div class="m6">
-	        		  <div id="agenda">
-        		  		<paper-toolbar>
+					<template is="dom-repeat" items="{{subactions}}" as="subt">
+						<div class="f1">
+							<paper-checkbox iditem$="{{index}}" on-click="_checkSubAction">{{subt.description}}</paper-checkbox>
+							<span class="date">{{subt.date}}</span>
+						</div>
+						<div class="f2">{{subt.time}} h</div>
+						<div class="f3"><span class="deltarea" iditem$="{{index}}" on-click="_delSubAction">x</span></div>
+					</template>
+				</div>
+			</div>
+			<div class="m6">
+			    <div class="m6">
+					<iron-ajax  url="/json/groups" last-response="{{groups}}" auto></iron-ajax>
+					<vaadin-combo-box name="id_proyect" item-label-path="title" item-value-path="_id"  label="Grupo"  items="{{groups}}" value="{{data.id_group}}">
+					</vaadin-combo-box>
+				</div>
+			    <div class="m3">
+			    	<vaadin-date-picker id="mypicker" name="date_deliver" class="textcenter" label="Fecha prevista" value="{{data.date_deliver}}"></vaadin-date-picker>
+			    </div>
+			    <div class="m3">
+			    	<paper-input  name="time_proyected" label="Tiempo Previsto" class="textcenter" value="{{data.time_proyected}}" placeholder="Tiempo Previsto"></paper-input>
+			    </div>
+			    <div class="m12">
+			    	<my-paper-progress timereal="{{timereal}}" timeproyected="{{data.time_proyected}}"></my-paper-progress>
+				</div>
+				<div id="agenda">
+			        	<paper-toolbar>
 						<paper-icon-button icon="add-circle-outline" title="nuevo Tarea "class="btnadd" on-click="_showFormDiary"></paper-icon-button>
 							<span  class="title">Horas</span> <span style="float:right">{{timereal}} h</span>
 						</paper-toolbar>
 						<template is="dom-repeat" items="{{diary}}">
-							<div class="f1">{{item.datetime}}</div><div class="f2">{{item.comment}}</div><div class="f3">{{item.time}} h</div>
+							<div class="m12">
+								<div class="f1">{{item.datetime}}</div><div class="f2">{{item.comment}}</div><div class="f3">{{item.time}} h</div>
+							</div>
 						</template>
-			</div>
-	        </div>
+					</div>
+				</div>
+
 	        <div class="m12">
-	        		<paper-icon-button id="buttondel" icon="delete" style="float:left" on-tap="_delItem"></paper-icon-button>
-			        <paper-fab noink icon="check" style="float:right" title="Guardar Cambios" on-tap="_confirmForm"></paper-fab>	        	
+        		<paper-icon-button id="buttondel" icon="delete" style="float:left" on-tap="_delItem"></paper-icon-button>
+		        <paper-fab  icon="check" style="float:right" title="Guardar Cambios" on-tap="_confirmForm"></paper-fab>
 	        </div>
-
-</form>
-
-	    </div>
+			</form>
+			</div>
 			<paper-dialog id="dial_diary">
 					<my-form-dyary-item  datain="{{formdiarydatain}}" dataout="{{formdiarydataout}}"></my-form-dyary-item>
 			</paper-dialog>
 			<paper-dialog id="dial_alert">
 					<my-modal-alert datain="{{modaldatain}}" dataout="{{modaldataout}}"></my-modal-alert>
-			</paper-dialog>	
-	</template>	    
+			</paper-dialog>
+	</template>
 	<script>
 	var myArray = new Array();
 		(function () {
@@ -250,12 +240,12 @@
 				  dataout:{
 				  	type: Object,
 				  	notify:true
-				  },				  	
+				  },
 		          // datos del formulario modal
 		          timereal:{
 		          	type:Number,
 		          	value:0
-		          },		          
+		          },
 		          interval:{
 		          	type:Number,
 		          	value:30
@@ -268,7 +258,7 @@
 		          diary:{
 		          	type:Array,
 		          	value:[]
-		          },		          
+		          },
 		          subdescription:String,
 		          subtime:String,
 		          formdiarydataout:{
@@ -283,16 +273,7 @@
 		          modaldatain:Object,
 		          dataajax:Object,
  				},
-
- 				_initElement: function(){
- 					console.log("en form actions"+this.datain._id)
- 					if(this.datain._id){
-						this.$.ajaxin.url="/json/actions/"+this.datain._id;
-						this.$.ajaxin.generateRequest();
- 					}
-					this.data=this.datain;
-					this.subactions=[];	
-									
+ 				ready:function(){
 					this.$.mypicker.i18n={
 							  today: 'hoy',
 							  cancel: 'cancelar',
@@ -307,26 +288,35 @@
 							    return monthName + ' ' + fullYear;
 							  }
 					};
-
+ 				},
+ 				_initElement: function(){
+ 					if(this.datain._id){
+						this.$.ajaxin.url="/json/actions/"+this.datain._id;
+						this.$.ajaxin.generateRequest();
+ 					}
+					this.data=this.datain;
+					// revisar el vaciado del array
+					this.subactions=[];
  				},
  				_iniResponse: function(e){
  						var data=e.target.lastResponse;
-
 						this.subactions=data.subactions ? data.subactions : [];
-						console.log(data.diary)
 						if(data.diary){
 							this.diary=data.diary;
-							var ttime=0;	
+							var ttime=0;
 						       for(key in data.diary){
 									ttime= ttime +data.diary[key].time;
-									console.log("tiempo:"+data.diary[key].time)
+									if(data.diary[key].date_end){
+									}
 						        }
-						    this.timereal=ttime;  
+						    this.timereal=ttime;
 						}
 						this.data=data;
-					    console.log("preparados datos form tiempo total:"+this.timereal);
-					    console.log(this.data)
-
+					if(this.data['date_end']){
+						this.$.actionend.checked = true
+					}else{
+						this.$.actionend.checked = false
+					}
  				},
 				_addSubAccion:function(e){
  					e.preventDefault();
@@ -338,43 +328,39 @@
 	 					obj={'description': des ,'time': time, 'date' : now }
 	 					this.push("subactions",obj);
  					}
+
  				},
  				_delSubAction:function(e){
-	 				iditem=e.target.getAttribute('iditem'); 
+	 				iditem=e.target.getAttribute('iditem');
 					//var pos = this.id_action.map(function(a) { return a.id; }).indexOf(parseInt(id_acci));
 					this.splice("subactions", iditem, 1);
  				},
-	
+ 				_checkSubAction:function(e){
+	 				iditem=e.target.getAttribute('iditem');
+ 				},
 				_showFormDiary:function(){
 					this.formdiarydatain={
-				        'interval': this.interval, 
-				        'id_action' : this.datain._id				            
+				        'interval': this.interval,
+				        'id_action' : this.datain._id
 					}
-		
-					this.$.dial_diary.toggle();						
+
+					this.$.dial_diary.toggle();
 
 				},
 				_confirmFormDiary: function(){
-					console.log("DATOS EN actions");
-					console.log(this.dataajax.diary)					
-					console.log(this.formdiarydataout)
 					if(this.formdiarydataout){
 						var obj=this.formdiarydataout
 						if(obj.method=="POST"){
 							this.push("pdiary",obj.data);
 						}
-
 					}
 					this.$.dial_diary.close();
-					console.log(this.datadiary)
 				},
 
  				_delItem:function(){
- 					console.log("borrar:"+this.datain._id);
- 					console.log(this.datain);
 					this._delAjaxData(this.datain._id)
 
-	 				//id_acci=e.target.getAttribute('nid'); 					
+	 				//id_acci=e.target.getAttribute('nid');
 					//var pos = this.id_action.map(function(a) { return a.id; }).indexOf(parseInt(id_acci));
 					//this.splice("id_action", pos, 1);
  				},
@@ -391,7 +377,7 @@
 					data.menssaje="Se va ha eliminar la tarea completamente <br> ¿Desea Continuar? ";
 					this.modaldataout="";
 					this.modaldatain=data;
-					this.$.dial_alert.toggle();	
+					this.$.dial_alert.toggle();
  				},
  				_delItemConfirm:function(){
  					if(this.modaldataout=="OK"){
@@ -403,18 +389,24 @@
  				_confirmForm:function(){
  					console.log(this.datain);
  					if(this.datain._id){
- 						method="PUT"; 
+ 						method="PUT";
  					}else{
- 						method="POST";	
+ 						method="POST";
 
  					}
  					this._addAjaxData(method)
- 				}, 				
+ 				},
  				_createDataOut:function(){
  					var data=this.data;
 					delete data.diary;
-					data['subactions']= this.subactions ? this.subactions : [];	
-	
+					data['subactions']= this.subactions ? this.subactions : [];
+					if(this.$.actionend.checked == true){
+						var f=new Date();
+						now=f.getFullYear()+"-"+(f.getMonth()+1)+"-"+f.getDate()+" "+f.getHours()+":"+f.getMinutes();
+						data['date_end']=data['date_end']!="" ? data['date_end']:now;
+					}else{
+						data['date_end']="";
+					}
 					return data;
  				},
 				_addAjaxData:function(method){
@@ -422,8 +414,6 @@
 					this.$.ajaxout.url="/json/actions";
 					this.$.ajaxout.body = JSON.stringify(this._createDataOut());
 					this.$.ajaxout.generateRequest();
-					console.log("datos enviado desde form:"+method);
-					console.log(this._createDataOut())
 				},
 				_delAjaxData:function(id_element){
 					this.$.ajaxout.method="DELETE";
@@ -433,39 +423,33 @@
 				_ajaxResponse: function(request) {
 					var obj={};
 					var data=this.$.ajaxout.lastResponse;
-					console.log("datos ajax que llega")
-					console.log(data);
 					if(data['status']){
-						obj.data=this._createDataOut();	
+						obj.data=this._createDataOut();
 						obj.method=data['method'];
 						if(data['method']=="POST"){
-							console.log("form POST")
 							obj.data._id=data['id'];
-						}	
+						}
 						if(data['method']=="PUT"){
-							console.log("form PUT")							
 							obj.pos=this.datain.idapp;
 						}
 						if(data['method']=="DELETE"){
-							console.log("form DELETE")							
+
 							obj.pos=this.datain.idapp;
-						}							
-						this.dataout=obj;							
+						}
+						this.dataout=obj;
 					}else{
 						console.log("hay un error")
 						this.modaldatain="ERROR: "+data['error'];
-						this.$.dial_alert.open();	
+						this.$.dial_alert.open();
 					}
 				},
 				_ajaxResponseError: function(request) {
 					data=this.$.ajaxout.lastError;
-					console.log("_ajaxResponseError")
-					console.log(data);
 					this.modaldataajax="ERROR: ";
-					this.$.dial_actions.open();							
+					this.$.dial_actions.open();
 				}
 
 			});
 		})();
 	</script>
-</dom-module>	    
+</dom-module>

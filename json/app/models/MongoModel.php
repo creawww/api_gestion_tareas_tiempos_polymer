@@ -157,18 +157,7 @@ return $retval['seq'];
         }
         $db=null;
     } 
-    public function listItemsArray($collect,$array){
-        $db = $this->conex;
-        $collection = $db->$collect; 
-        $cursor = $collection->find(array('_id'=> array('$in'=> $array)));
-        $num_docs = $cursor->count();
-        if( $num_docs > 0 ){
-            return iterator_to_array($cursor);
-        }else{
-            return [];
-        }
-        $db=null;
-    }    
+  
     public function oneItem($collect,$id){
         $db = $this->conex;
         $collection = $db->$collect; 
@@ -183,7 +172,7 @@ return $retval['seq'];
         $array = $collection->findOne(array('_id'=> $id));
         //echo "datos en model";
         //var_dump($array);
-   
+        if(isset($array[$value]))
             return $array[$value];
         $db=null;
     }    
@@ -230,11 +219,26 @@ return $retval['seq'];
         }
         $db=null;
     }
+
+    public function sumItensDays($value){
+           $data=$this->listItemsValue("diarydays", "id_action",$value);
+           $total=0;
+            foreach ($data as $doc) {
+                $total+=$doc['time'];
+            }
+          return  $total;
+        $db=null;
+    }
+
     public function sumItens($collect,$row,$value,$sum){
                 $db = $this->conex;
-        $collection = $db->$collect; 
+        $collection = $db->diarydays; 
 
-        $value=$collection->aggregate(array ('$group' => array ( $row => $value , 'total' => array ('$sum'=> $sum))));
+        //$value=$collection->aggregate(array ('$group' => array ( 'id_action' => $value , 'total' => array ('$sum'=> '$time'))));
+
+        $value=$collection->aggregate(array ('$group' => array (
+                                                    '_id' =>array ('id_action' => $value),
+                                                    'total' => array ('$sum'=> '$time'))));        
         var_dump($value);
 
           return $value;

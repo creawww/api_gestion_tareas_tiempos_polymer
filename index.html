@@ -16,7 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="Polymer Starter Kit">
-  <title>Polymer Starter Kit</title>
+  <title>GESTATI</title>
 
   <!-- Place favicon.ico in the `app/` directory -->
 
@@ -49,6 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
   <!-- endbuild -->
 
   <!-- Because this project uses vulcanize this should be your only html import
@@ -66,9 +67,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template is="dom-bind" id="app">
 
-    <paper-drawer-panel id="paperDrawerPanel">
+    <paper-drawer-panel id="paperDrawerPanel" drawer-width="100px">
       <!-- Drawer Scroll Header Panel -->
-      <paper-scroll-header-panel drawer fixed>
+      <paper-scroll-header-panel drawer  fixed>
 
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
@@ -79,15 +80,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-menu class="app-menu" attr-for-selected="data-route" selected="[[route]]">
           <a data-route="home" href="{{baseUrl}}">
             <iron-icon icon="home"></iron-icon>
-            <span>Home</span>
           </a>
           <a data-route="diary" href="{{baseUrl}}diary">
             <iron-icon icon="date-range"></iron-icon>
-            <span>Agenda</span>
           </a>
           <a data-route="graphic" href="{{baseUrl}}graphic">
-            <iron-icon icon="ding-up"></iron-icon>
-            <span>Resultados</span>
+            <iron-icon icon="assessment"></iron-icon>
           </a>          
         </paper-menu>
       </paper-scroll-header-panel>
@@ -99,13 +97,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
             <section data-route="home" tabindex="-1">
-      				<page-home></page-home>
+
+      				<page-home apppage="{{route}}"></page-home>
            </section>
             <section data-route="diary" tabindex="-1">
-              <page-diary></page-diary>
+       
+              <page-diary apppage="{{route}}"></page-diary>
             </section>
             <section data-route="graphic" tabindex="-1">
-              <page-graphic></page-graphic>
+              <page-graphic apppage="{{route}}"></page-graphic>
             </section> 
           </iron-pages>
         </div>

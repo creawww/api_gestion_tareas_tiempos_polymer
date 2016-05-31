@@ -52,15 +52,15 @@
 			<paper-icon-button icon="date-range"></paper-icon-button>
 			<paper-icon-button icon="arrow-forward" on-click="_moveWeek"></paper-icon-button>
 		</paper-toolbar>
-
+				<iron-ajax id="ajaxdiary" url="/json/diarydays" on-response="_ajaxResponseDiary"></iron-ajax>
 		<div id="content">
 
-			<my-diary  id="diarymeeting" dateini="{{showday}}" nday="{{nsday}}" on-evenexist="_showform" whours="{{ahours}}"> </my-diary>
+			<my-diary  id="diary7" dateini="{{showday}}" nday="{{nsday}}" on-evenexist="_showform" whours="{{ahours}}"> </my-diary>
 
 
 			<!-- ventana emergente con el formulario -->
-			<paper-dialog id="dialogo1" modal>
-					<my-form-dyary-item  datain="{{formdatain}}" dataout="{{formdataout}}"></my-form-dyary-item>	
+			<paper-dialog id="dial_diary" modal>
+					<my-form-dyary-item  datain="{{formdatain}}" dataout="{{formdataout}}"></my-form-dyary-item>
 			</paper-dialog>
 		</div>
 	</template>
@@ -73,7 +73,7 @@
 				properties: {
 					nsday:{
 						type:Number,
-						value:5
+						value:7
 					},
 					showday: {
 						type:String,
@@ -89,8 +89,7 @@
 					ahours:{
 						type:Array,
 						value:function(){
-							return  [{ 'hini':  "8:00",  "hfin" : "13:00" },
-									{ 'hini':  "15:00",  "hfin" : "19:00" }]
+							return  [{ 'hini':  "8:00",  "hfin" : "24:00" }]
 							}
 					},
 					interval:{
@@ -104,68 +103,103 @@
 		            formdataout:{
 		            	type:Object,
 		            	observer:'_confirmForm'
-		            },		            
+		            },
+		            apppage:{
+		              observer:"_initElement"
+		            }
 				},
-				_showform: function(e){
-					console.log("llega"+e.detail.dtime)
-					    datetime=new Date(e.detail.dtime);
-					    tend=new Date(datetime.setMinutes(datetime.getMinutes()+parseInt(this.interval)));
-						this.formdatain={
-							'date': e.detail.dtime.split(" ")[0],
-							'time_start': e.detail.dtime.split(" ")[1],
-							'time_end':tend.getHours()+":"+tend.getMinutes(),
- 				            'id_action': e.detail.id_action,
- 				            'comment': e.detail.comment,
- 				            'interval': this.interval, 				            
-						}
+				_initElement:function(){
+	        if(this.apppage=="diary"){
+						var d=new Date();
+						this.showday=d.getFullYear()+"-"+this._addZeroOneCaracter(d.getMonth()+1)+"-"+this._addZeroOneCaracter(d.getDate());
+						this._askForDataAjax()
+					}
+				},
+				_askForDataAjax:function(){
+					var d=new Date(this.showday);
+					var dend=new Date(d.setDate(d.getDate()+7));
+					var date_date= dend.getFullYear()+"-"+this._addZeroOneCaracter(dend.getMonth()+1)+"-"+this._addZeroOneCaracter(dend.getDate());
+					this.$.ajaxdiary.method="GET";
+					var query="?dateini="+this.showday+" 00:00&dateend="+date_date+" 24:00"
+					this.$.ajaxdiary.url="/json/diarydays/"+query;
+					this.$.ajaxdiary.generateRequest();
+				},
+				_showform:function(e){
+					var dataf={};
+					if(e.detail.item){
+						dataf=this.datadiary[e.detail.item];
+						dataf['idapp']=e.detail.item;
+					}else{
+						dataf['datetime']= e.detail.dtime;
+					}
+					if(e.detail.id_action){
+						dataf['id_action']=e.detail.id_action;
+					}
+					dataf['interval']=this.interval;
+					this.formdatain=dataf;
+
+					this.$.dial_diary.open();
 
 
-						this.$.dialogo1.toggle();
 				},
 				_confirmForm: function(){
-						data={'date_ini': this.formdataout.date+" "+this.formdataout.time_start+":00",
-							  'date_end': this.formdataout.date+" "+this.formdataout.time_end+":00",
- 				              'id_action': this.formdataout.id_action,
- 				              'comment': this.formdataout.comment,
+					if(this.formdataout){
+						var obj=this.formdataout
+						if(obj.method=="POST"){
+
+							if(this.datadiary){
+								var data=this.datadiary;
+							}else{
+								var data=[]
+							}
+							data.push(obj.data);
+
+							this.datadiary=data;
+							idapp=this.datadiary.length -1;
+
+						this.$.diary7._drawItem(obj.data.datetime , obj.data.time , obj.data.comment , idapp);
 						}
-						console.log("se ha cerrado el form");
-						console.log(data)
-			        this._insertNewData()
+						if(this.formdataout.method=="PUT"){
+							var pos=this.formdataout.pos
+							var obj=this.formdataout.data
+							this.splice("datadiary",pos, 1, obj);
 
-			        this._dataPaint(this.formdataout.date, this.formdataout.time_start,this.formdataout.time_end ,this.formdataout.comment);
+							this.$.diary7._deleteItem(obj.datetime)
+							this.$.diary7._drawItem(obj.datetime , obj.time , obj.comment , pos);
 
-			       console.log("datos confirmados"+JSON.stringify(myArray))
+						}
+						if(this.formdataout.method=="DELETE"){
 
-				},
-				_insertNewData: function(data){
-						myArray.push(data);
-				},
-				_dataPaint: function(date,tini,tfin,texto){
-					pini=date+" "+tini
-					meeting=this.$.diarymeeting;
-					console.log("a pintar:"+pini+"/comentario"+this.comment)
-					if(meeting.querySelector("div[dtime='"+pini+"']")){
-						eparent=meeting.querySelector("div[dtime='"+pini+"']");
-						elem=document.createElement('div');
-						texto=document.createTextNode(texto);
-						//añadido  style-scope my-month porque sino no acepta los estilos
-						elem.setAttribute('class','cita style-scope aplie-meeting');
+							var pos=this.formdataout.pos
+							var obj=this.formdataout.data
 
-						var d1 = new Date(date+" "+tini+":00");
-						var d2 = new Date(date+" "+tfin+":00");
-						console.log(date+" "+tini+":00"+"--->"+d1+"-- ii "+this.interval )
-						console.log(date+" "+tfin+":00"+"--->"+d2+"-- ii "+this.interval )
-						//La diferencia se da en milisegundos así que debes dividir entre 1000
-						var c = ((d2-d1)/60000);
-						console.log("diferencia en minutos:"+c ) // resultado 5;
+							this.splice("datadiary",pos, 1);
+							this.$.diary7._deleteItem(obj.datetime)
+						}
 
-
-
-						dur=(c/this.interval)*21
-						elem.setAttribute('style','width: '+(eparent.offsetWidth-20)+"px; height: "+dur+"px");
-						elem.appendChild(texto);
-						eparent.appendChild(elem);
 					}
+
+					this.$.dial_diary.close();
+				},
+ 				_ajaxResponseDiary: function(e){
+ 						var data=e.target.lastResponse;
+						this.datadiary=data;
+						// añadimos un poco de retardo para que de tiempo a formarse el padre y pueda detectar su tamaño (sino no lo pinta bien en la primera carga)
+						this.async(function() {   this.$.diary7._paintDataDay(data); }, 50);
+ 				},
+
+				_moveWeek:function(){
+					this._changeDate(7);
+
+				},
+				_moveWeek1:function(){
+					this._changeDate(-7);
+				},
+				_changeDate: function(day){
+					d=new Date(this.showday);
+					d.setDate(d.getDate()+day); //sumar un dia
+					this.showday=d.getFullYear()+"-"+this._addZeroOneCaracter(d.getMonth()+1)+"-"+this._addZeroOneCaracter(d.getDate())
+					this._askForDataAjax()
 
 				},
 
